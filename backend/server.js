@@ -2,6 +2,7 @@
 // import external modules
 const WebSocketServer = require('websocket').server;
 const http = require('http');
+const fs = require('fs')
 const { htmlEntities, colors } = require('./util');
 
 // Port where we'll run the websocket server
@@ -24,9 +25,16 @@ let clients = [];
  * HTTP Server as base for our WebSocket
  */
 const httpServer = http.createServer((request, response) => {
-  // we do not need to handle any requests specifically here, as we only need the http server to initialize the websocket connection!
-  response.writeHead(501); // 501 = NOT IMPLEMENTED
-  response.end();
+  response.writeHead(200, {'Content-Type': 'text/html'});
+  fs.readFile('../frontend/index.html', function(error, data) {
+    if (error) {
+      response.writeHead(404);
+      response.write('Error: File Not Found');
+    } else {
+      response.write(data);
+    }
+    response.end();
+  });
 });
 httpServer.listen(WEBSOCKET_SERVER_PORT, () => {
   console.log(
