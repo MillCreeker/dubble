@@ -2,7 +2,7 @@
 
 ## Authors
 - Sebastian Toporsch
-- Tobias Heinrich Weigl
+- Tobias Weigl
 - Jan Mühlbacher
 
 ## Idea
