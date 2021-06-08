@@ -1,3 +1,3 @@
 function btnTest(){
-    document.getElementById("messageArea").textContent = "test :)"
+    document.getElementById("areaMessage").textContent = "test :)"
 }
