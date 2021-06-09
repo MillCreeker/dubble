@@ -28,7 +28,7 @@ if (!window.WebSocket) {
 }
 
 // open connection
-const connection = new WebSocket(`ws://127.0.0.1:${SERVER_PORT}`, 'msd-webservice');
+const connection = new WebSocket(`ws://127.0.0.1:${SERVER_PORT}`, 'dubble');
 
 // WebSocket Event 'open' and EventHandler 'onOpen'
 connection.onopen = () => {
