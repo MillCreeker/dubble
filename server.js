@@ -6,7 +6,7 @@ const fs = require('fs')
 const { htmlEntities, colors } = require('./util');
 
 // Port where we'll run the websocket server
-const { WEBSOCKET_SERVER_PORT } = require('./util/config');
+const { WEBSOCKET_SERVER_PORT } = require('./util/config').default;
 // Origin
 const WEBSOCKET_ORIGIN = 'dubble';
 
@@ -26,7 +26,7 @@ let clients = [];
  */
 const httpServer = http.createServer((request, response) => {
   response.writeHead(200, {'Content-Type': 'text/html'});
-  fs.readFile('../frontend/index.html', function(error, data) {
+  fs.readFile('./public/html/index.html', function(error, data) {
     if (error) {
       response.writeHead(404);
       response.write('Error: File Not Found');
