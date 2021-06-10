@@ -34,5 +34,5 @@ Sharing text across devices via a websocket (for this demo locally)
  #### Starting the server
  Run in terminal/cmd:
  ```bs
- npm install
+ npm start
  ```
