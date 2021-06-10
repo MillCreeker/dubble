@@ -17,7 +17,7 @@ Sharing text across devices via a websocket (for this demo locally)
 
  ## Setup
  #### Installing Node dependencies
- Run in terminal/cmd
+ Run in terminal/cmd:
  ```bs
  npm install
  ```
@@ -31,3 +31,8 @@ Sharing text across devices via a websocket (for this demo locally)
  npm run create-db
  ```
 
+ #### Starting the server
+ Run in terminal/cmd:
+ ```bs
+ npm install
+ ```
