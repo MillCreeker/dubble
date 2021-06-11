@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>dubble</title>
-        <meta name="description" content="You can conveniently view text on multiple devices">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <script
-            src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-            integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
-            crossorigin="anonymous"
-        ></script>
-    </head>
-    <body>
-        <div id="divAddUser" align="right">
-            <button id="btnAddUser">+</button>
-        </div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>dubble</title>
 
-        <div id="divMessage" align="center">
-            <textarea id="areaMessage" rows="4" cols ="50" placeholder="Your message here ..."></textarea>
-            <br>
-            <button id="btnMessage" onclick="btnTest()">Send</button>
-        </div>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+  <script src="./client.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome <span class="username"></span></h1>
 
-        <script src="../js/client.js" async defer></script>
-    </body>
+    <form action="/login" method="post" id="login">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" name="username" id="username" placeholder="Enter Username" class="form-control">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" name="password" id="password" placeholder="Enter Password" class="form-control">
+      </div>
+      <div class="mb-3">
+        <button class="btn btn-primary mb-3" type="submit">Login</button>
+      </div>
+    </form>
+
+    <ul class="list-group list-group-flush" id="notes"></ul>
+  </div>
+
+  <template id="note">
+    <li class="list-group-item"></li>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+</body>
 </html>
