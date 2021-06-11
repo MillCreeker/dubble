@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Text streaming service",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node .",
     "create-db": "node ./scripts/create-database.js"
@@ -27,8 +28,12 @@
   ],
   "license": "GPL-3.0",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "mysql": "^2.18.1",
+    "uuid": "^8.3.2",
     "websocket": "^1.0.33"
   }
 }
