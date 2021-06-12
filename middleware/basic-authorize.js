@@ -2,17 +2,17 @@ import { DBConnection } from './db-connection.js';
 import bcrypt from 'bcrypt';
 
 function isValidUser(username, password) {
-  const dbCon = new DBConnection();
-  const user = await dbCon.getUsers().find(u => u.username === username);
-  dbCon.close();
-  // instead of simple compare the plain passwords, compare the hashed with the help of bcrypt
-  if (user) {
-    return await bcrypt.compare(password, user.password);
-  }
+  return await DBConnection.getUsersWithPassword().then(function (users) {
+    const user = users.find(u => u.username === username);
+    if (user) {
+      return await bcrypt.compare(password, user.password);
+    }
+    return false;
+  }).catch(() => {
+    return false;
+  });
 
-  return false;
-
-  }
+}
   
 
 export async function basicAuth(req, res, next) {

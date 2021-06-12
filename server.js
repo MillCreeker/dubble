@@ -1,40 +1,96 @@
 'use strict';
 
 import express from 'express';
-import cookieParser from 'cookie-parser';
-import { WEBSOCKET_SERVER_PORT } from './util/config.js';
+import { WEBSOCKET_SERVER_PORT, SECRET, DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USER, SESSION_LIFETIME, SESSION_NAME } from './util/config.js';
 import { checkCredentials } from './middleware/authenticate.js';
-import { sessionAuthorize } from './middleware/session-authorize.js';
-import { v4 as uuidv4 } from 'uuid';
-import { DBConnection } from './middleware/db-connection.js';
-import { Session } from './models/Session.js';
-import bodyParser from 'body-parser'
+import { verifyToken } from './middleware/jwt-authorize.js';
+import { registerUser } from './middleware/register.js';
+import store from 'express-mysql-session';
+import session from 'express-session';
+import jwt from 'jsonwebtoken';
+import { sessionAuth, redirectToHomeIfAuth } from './middleware/session-authorize.js';
+
+const MySQLStore = store(session);
 const app = express();
 
-// provide static data (index.html) on base route
-app.use('/', express.static('public/html'));
+const conOptions = {
+  host: DATABASE_HOST,
+  user: DATABASE_USER,
+  password: DATABASE_PASSWORD,
+  database: 'dubble',
+  multipleStatements: true
+}
 
-app.use(cookieParser());
-app.use(express.urlencoded());
+const sessionStore = new MySQLStore(conOptions);
+
+app.use(express.urlencoded({extended: true}));
+app.use(session({
+  name: SESSION_NAME,
+  secret: SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: sessionStore,
+  cookie: {
+    maxAge: SESSION_LIFETIME,
+    sameSite: true,
+    secure: false,
+  }
+}));
+
+app.use(function(req, res, next) {
+  res.header(
+    "Access-Control-Allow-Headers",
+    "x-access-token, Origin, Content-Type, Accept"
+  );
+  next();
+});
+
+app.set('view engine', 'pug');
+
+app.set('views','./views');
+
+app.get('/', sessionAuth, async (req, res) => {
+  return res.render('home');
+});
+
+app.get('/login', redirectToHomeIfAuth, async (req, res) => {
+  return res.render('login');
+});
 
 // login
-app.post('/login', async (req, res) => {
-  console.log(req.body);
+app.post('/login', redirectToHomeIfAuth, async (req, res) => {
   if (req.body.username && req.body.password) {
-    const user = checkCredentials(req.body);
-
+    const user = await checkCredentials(req.body);
     if (user) {
-      const session_id = uuidv4();
-      var dbCon = new DBConnection();
-      dbCon.addSession(new Session(session_id, user.id));
-      dbCon.close();
-
-      return res.cookie('session_id', session_id, {httpOnly: true, expires: 0, sameSite: true}).json({
-        user,
+      req.session.userId = user.id;
+      /*var token = jwt.sign(user, SECRET, {  //use this for api login
+        expiresIn: 86400 // 24 hours
       });
+      res.json({
+        accessToken: token
+      });*/
+      return res.redirect('/');
     }
   }
-  res.status(401).json({ error: 'invalid credentials' });
+  return res.redirect('./login');
+});
+
+app.get('/register', redirectToHomeIfAuth, async (req, res) => {
+  return res.render('register');
+});
+
+app.post('/register', redirectToHomeIfAuth, registerUser, async (req, res) => {
+  return res.redirect('./')
+});
+
+app.post('/logout', async (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      return res.redirect('./');
+    }
+    res.clearCookie(SESSION_NAME);
+    return res.redirect('./login');
+  });
 });
 
 app.listen(WEBSOCKET_SERVER_PORT, () => {

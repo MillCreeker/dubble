@@ -6,116 +6,145 @@ import { DATABASE_PASSWORD } from '../util/config.js';
 import { User } from '../models/User.js';
 import { UserWithPassword } from '../models/UserWithPassword.js';
 import { TextItem } from '../models/TextItem.js';
-import { Session } from '../models/Session.js';
 
-export class DBConnection {
-    constructor() {
-        this._con = mysql.createConnection({
-            host: DATABASE_HOST,
-            user: DATABASE_USER,
-            password: DATABASE_PASSWORD,
-            database: 'dubble',
-            multipleStatements: true
+const connectionPool = mysql.createPool({
+    host: DATABASE_HOST,
+    user: DATABASE_USER,
+    password: DATABASE_PASSWORD,
+    database: 'dubble',
+    multipleStatements: true
+});
+
+function getConnection() {
+    return new Promise(function(resolve, reject) {
+      connectionPool
+        .getConnection(function(err, connection) {
+            if (err) reject(err);
+            resolve(connection);
         });
-    }
-    getTextItems() {
-        this._con.connect(function(err) {
-            if (err) throw err;
-            var sql_string = `
-                SELECT * FROM text_items;
-            `
-            con.query(sql_string, function (err, result, fields) {
-              if (err) throw err;
-              var itemList = [];
-              result.forEach(element => {
-                  itemList.push(new TextItem(element.id, element.text, element.user_id))
-              });
-              return itemList;
+    });
+};
+
+function getTextItems() {
+    return new Promise(function (resolve, reject) {
+        var sql_string = `
+            SELECT * FROM text_items;
+        `
+        getConnection().then(function(connection) {
+            connection.query(sql_string, function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err);
+                } else {
+                    var itemList = [];
+                    result.forEach(element => {
+                        itemList.push(new TextItem(element.id, element.text, element.user_id))
+                    });
+                    resolve(itemList);
+                }
+            }).catch(function(error) {
+                reject(error);
             });
         });
-    }
-    getUsers() {
-        this._con.connect(function(err) {
-            if (err) throw err;
-            var sql_string = `
-                SELECT * FROM users;
-            `
-            con.query(sql_string, function (err, result, fields) {
-              if (err) throw err;
-              var itemList = [];
-              result.forEach(element => {
-                  itemList.push(new UserWithPassword(element.id, element.username, element.password))
-              });
-              return itemList;
+    });
+};
+
+function getUsersWithPassword() {
+    return new Promise(function (resolve, reject) {
+        var sql_string = `
+            SELECT * FROM users;
+        `
+        getConnection().then(function(connection) {
+            connection.query(sql_string, function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err);
+                } else {
+                    var itemList = [];
+                    result.forEach(element => {
+                        itemList.push(new UserWithPassword(element.id, element.username, element.password))
+                    });
+                    resolve(itemList);
+                }
             });
+        }).catch(function(error) {
+            console.log('error is here');
+            reject(error);
         });
-    }
-    getUsersWithoutPassword() {
-        this._con.connect(function(err) {
-            if (err) throw err;
-            var sql_string = `
-                SELECT id, username FROM users;
-            `
-            con.query(sql_string, function (err, result, fields) {
-              if (err) throw err;
-              var itemList = [];
-              result.forEach(element => {
-                  itemList.push(new User(element.id, element.username))
-              });
-              return itemList;
+    });
+};
+
+function getUsers() {
+    return new Promise(function (resolve, reject) {
+        var sql_string = `
+            SELECT id, username FROM users;
+        `
+        getConnection().then(function(connection) {
+            connection.query(sql_string, function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    var itemList = [];
+                    result.forEach(element => {
+                        itemList.push(new User(element.id, element.username))
+                    });
+                    resolve(itemList);
+                }
             });
+        }).catch(function(error) {
+            reject(error);
         });
-    }
-    getSessions() {
-        this._con.connect(function(err) {
-            if (err) throw err;
-            var sql_string = `
-                SELECT * FROM sessions;
-            `
-            con.query(sql_string, function (err, result, fields) {
-              if (err) throw err;
-              var itemList = [];
-              result.forEach(element => {
-                  itemList.push(new Session(element.id, element.user_id))
-              });
-              return itemList;
+    });
+};
+
+function addUser(user) {
+    return new Promise(function (resolve, reject) {
+        var sql_string = `
+            INSERT INTO users (username, password) VALUES (?,?);
+        `
+        getConnection().then(function(connection) {
+            connection.query(sql_string, [user.username, user.password], function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result.insertId);
+                }
             });
+        }).catch(function(error) {
+            reject(error);
         });
-    }
-    addUser(user) {
-        this._con.connect(function(err) {
-            if (err) throw err;
-            var sql_string = `
-                INSERT INTO users (username, password) VALUES (?,?);
-            `
-            con.query(sql_string, [user.username, user.password], function (err, result, fields) {
-              if (err) throw err;
+    });
+};
+
+function addTextItem(text_item) {
+    return new Promise(function (resolve, reject) {
+        var sql_string = `
+            INSERT INTO text_items (text, user_id) VALUES (?,?,?);
+        `
+        getConnection().then(function(connection) {
+            connection.query(sql_string, [text_item.text, text_item.user_id], function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result.insertId);
+                }
             });
+        }).catch(function(error) {
+            reject(error);
         });
-    }
-    addSession(session) {
-        this._con.connect(function(err) {
-            if (err) throw err;
-            var sql_string = `
-                INSERT INTO sessions (id, user_id) VALUES (?,?);
-            `
-            con.query(sql_string, [session.id, session.user_id], function (err, result, fields) {
-              if (err) throw err;
-            });
-        });
-    }
-    addTextItem(text_item) {
-        this._con.connect(function(err) {
-            if (err) throw err;
-            var sql_string = `
-                INSERT INTO text_items (text, user_id) VALUES (?,?,?);
-            `
-            con.query(sql_string, [text_item.text, text_item.user_id], function (err, result, fields) {
-              if (err) throw err;
-            });
-        });
-    }
-    close() {
-        this._con.destroy();
-    }
+    });
+};
+
+const DBConnection = {
+    getConnection: getConnection,
+    getTextItems: getTextItems,
+    getUsersWithPassword: getUsersWithPassword,
+    getUsers: getUsers,
+    addUser: addUser,
+    addTextItem: addTextItem,
 }
+
+export { DBConnection };

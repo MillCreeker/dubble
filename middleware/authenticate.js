@@ -7,15 +7,28 @@ import bcrypt from 'bcrypt';
  * @returns {{id: number, username: string, fullname: string} | undefined} user object (without password) when valid user was found
  */
 export async function checkCredentials(credentials) {
-    var dbCon = new DBConnection();
-    // check if user with given username exists
-    const user = await dbCon.getUsers().find((u) => u.username === credentials.username);
-    dbCon.close();
+    return await DBConnection.getUsersWithPassword().then(function(users) {
 
-    // when user exists, check if given password is correct
-    if (user && await bcrypt.compare(credentials.password, user.password)) {
-        const { password, ...userWithoutPassword } = user; // 'remove' password on object that will returned
-        return userWithoutPassword;
-    }
-    return undefined;
+        // check if user with given username exists
+        const user = users.find((u) => u.username === credentials.username);
+        // when user exists, check if given password is correct
+        return new Promise((resolve, reject) => {
+            if (user) {
+                bcrypt.compare(credentials.password, user.password).then(function(isAuthenticated) {
+                    if (isAuthenticated) {
+                        const { password, ...userWithoutPassword } = user; // 'remove' password on object that will returned
+                        resolve(userWithoutPassword);
+                    } else {
+                        resolve(undefined);
+                    }
+                });
+            } else {
+                resolve(undefined);
+            }
+        });
+    }).then((user) => {
+        return user;
+    }).catch(function(error) {
+        return undefined;
+    });
 }

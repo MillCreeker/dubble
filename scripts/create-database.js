@@ -44,13 +44,6 @@ function createTables() {
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
-
-  CREATE TABLE IF NOT EXISTS sessions (
-    id int NOT NULL,
-    user_id int NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
-  );
   `;
   var con = mysql.createConnection({
     host: DATABASE_HOST,

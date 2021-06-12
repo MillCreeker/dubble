@@ -1,0 +1,10 @@
+extends layout
+block content
+    div.text-center
+    h1 Herzlichen Glückwunsch du kleiner Kekensohn, du hast dich eingeloggt. Jetzt verpiss dich wieder!
+        form(class="form-signin" method="POST" action="/logout")
+            #error
+                if error
+                    p.text-danger Error!!!
+            - var buttonClass=['btn', 'btn-lg', 'btn-primary', 'btn-block'];
+            button(class=buttonClass type="submit") Log Out
