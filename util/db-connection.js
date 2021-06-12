@@ -1,8 +1,8 @@
 import mysql from 'mysql';
 
-import { DATABASE_HOST } from '../util/config.js';
-import { DATABASE_USER } from '../util/config.js';
-import { DATABASE_PASSWORD } from '../util/config.js';
+import { DATABASE_HOST } from './config.js';
+import { DATABASE_USER } from './config.js';
+import { DATABASE_PASSWORD } from './config.js';
 import { User } from '../models/User.js';
 import { UserWithPassword } from '../models/UserWithPassword.js';
 import { TextItem } from '../models/TextItem.js';
@@ -121,7 +121,7 @@ function addUser(user) {
 function addTextItem(text_item) {
     return new Promise(function (resolve, reject) {
         var sql_string = `
-            INSERT INTO text_items (text, user_id) VALUES (?,?,?);
+            INSERT INTO text_items (text, user_id) VALUES (?,?);
         `
         getConnection().then(function(connection) {
             connection.query(sql_string, [text_item.text, text_item.user_id], function (err, result, fields) {

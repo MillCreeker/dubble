@@ -1,6 +1,6 @@
 export async function sessionAuth(req, res, next) {
     if (req.session.userId) {
-        next()
+        next();
     } else {
         return res.redirect('./login');
     }

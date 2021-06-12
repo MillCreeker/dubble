@@ -1,4 +1,4 @@
-import { DBConnection } from './db-connection.js';
+import { DBConnection } from '../util/db-connection.js';
 import bcrypt from 'bcrypt';
 import { UserWithPassword } from '../models/UserWithPassword.js';
 

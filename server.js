@@ -23,7 +23,8 @@ const conOptions = {
 
 const sessionStore = new MySQLStore(conOptions);
 
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({extended: true})); //only for webserver
+//app.use(express.json());  //for api server
 app.use(session({
   name: SESSION_NAME,
   secret: SECRET,
@@ -37,13 +38,13 @@ app.use(session({
   }
 }));
 
-app.use(function(req, res, next) {
+/*app.use(function(req, res, next) { //api server
   res.header(
     "Access-Control-Allow-Headers",
     "x-access-token, Origin, Content-Type, Accept"
   );
   next();
-});
+});*/
 
 app.set('view engine', 'pug');
 
