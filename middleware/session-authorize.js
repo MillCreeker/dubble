@@ -1,5 +1,3 @@
-import { DBConnection } from './db-connection.js'
-
 export async function sessionAuth(req, res, next) {
     if (req.session.userId) {
         next()
@@ -12,4 +10,5 @@ export async function redirectToHomeIfAuth(req, res, next) {
     if(req.session.userId) {
         return res.redirect('./')
     }
+    next();
 }
