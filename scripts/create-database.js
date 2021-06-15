@@ -1,10 +1,15 @@
+/** 
+ * Module for initially creating the dubble database with the needed tables and relations.
+ */
 import mysql from 'mysql';
-
 import { DATABASE_HOST } from '../util/config.js';
 import { DATABASE_USER } from '../util/config.js';
 import { DATABASE_PASSWORD } from '../util/config.js';
 
-
+/** 
+ * Creates a connection to the database.
+ * Configure the database parameters in the .env file.
+ */
 var con = mysql.createConnection({
   host: DATABASE_HOST,
   user: DATABASE_USER,
@@ -12,13 +17,17 @@ var con = mysql.createConnection({
   multipleStatements: true
 });
 
+// log if an error occurs
 con.on('error', function() {
   con.destroy();
   console.log('an error occured');
 });
+
+// connect to the database
 con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
+  // create dubble database
   var query = con.query("CREATE DATABASE IF NOT EXISTS dubble;", function (err, result) {
     if (err) throw err;
     console.log("Database created");
@@ -27,7 +36,11 @@ con.connect(function(err) {
   });
 });
 
+/**
+ * create the basic tables and relations for the dubble database.  
+ */
 function createTables() {
+  // sql for creating tables
   const sql_string = `
   CREATE TABLE IF NOT EXISTS users (
     id int NOT NULL AUTO_INCREMENT,
@@ -45,6 +58,7 @@ function createTables() {
     FOREIGN KEY (user_id) REFERENCES users(id)
   );
   `;
+  // create connection to the database
   var con = mysql.createConnection({
     host: DATABASE_HOST,
     user: DATABASE_USER,
@@ -52,10 +66,18 @@ function createTables() {
     database: 'dubble',
     multipleStatements: true
   });
+
+  // log if an exception occurs
+  con.on('error', function() {
+    con.destroy();
+    console.log('an error occured');
+  });
   
+  // connect to the database
   con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
+    // execute the sql string
     con.query(sql_string, function (err, result) {
       if (err) throw err;
       console.log("Tables created");

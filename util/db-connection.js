@@ -1,3 +1,6 @@
+/** 
+ * Module for basic database operations inside the dubble database.
+ */
 import mysql from 'mysql';
 
 import { DATABASE_HOST } from './config.js';
@@ -7,6 +10,7 @@ import { User } from '../models/User.js';
 import { UserWithPassword } from '../models/UserWithPassword.js';
 import { TextItem } from '../models/TextItem.js';
 
+// create a connection pool to reuse connections
 const connectionPool = mysql.createPool({
     host: DATABASE_HOST,
     user: DATABASE_USER,
@@ -15,6 +19,10 @@ const connectionPool = mysql.createPool({
     multipleStatements: true
 });
 
+/**
+ * Get a connection out of the pool
+ * @returns connection
+ */
 function getConnection() {
     return new Promise(function(resolve, reject) {
       connectionPool
@@ -25,6 +33,10 @@ function getConnection() {
     });
 };
 
+/**
+ * Get all TextItems in the database
+ * @returns TextItem[]
+ */
 function getTextItems() {
     return new Promise(function (resolve, reject) {
         var sql_string = `
@@ -49,6 +61,10 @@ function getTextItems() {
     });
 };
 
+/**
+ * Get all UsersWithPassword in the database
+ * @returns UserWithPassword[]
+ */
 function getUsersWithPassword() {
     return new Promise(function (resolve, reject) {
         var sql_string = `
@@ -74,6 +90,10 @@ function getUsersWithPassword() {
     });
 };
 
+/**
+ * Get all Users in the database
+ * @returns User[]
+ */
 function getUsers() {
     return new Promise(function (resolve, reject) {
         var sql_string = `
@@ -98,6 +118,11 @@ function getUsers() {
     });
 };
 
+/**
+ * Add a User to the database.
+ * @param User user 
+ * @returns id
+ */
 function addUser(user) {
     return new Promise(function (resolve, reject) {
         var sql_string = `
@@ -118,6 +143,11 @@ function addUser(user) {
     });
 };
 
+/**
+ * Add a TextItem to the database.
+ * @param TextItem text item 
+ * @returns id
+ */
 function addTextItem(text_item) {
     return new Promise(function (resolve, reject) {
         var sql_string = `
@@ -138,6 +168,7 @@ function addTextItem(text_item) {
     });
 };
 
+// export functions inside an object
 const DBConnection = {
     getConnection: getConnection,
     getTextItems: getTextItems,

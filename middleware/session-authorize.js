@@ -1,3 +1,7 @@
+/**
+ * Middleware to check if client is logged into a session.
+ * Redirects to login if not.
+ */
 export async function sessionAuth(req, res, next) {
     if (req.session.userId) {
         next();
@@ -6,6 +10,10 @@ export async function sessionAuth(req, res, next) {
     }
 }
 
+/**
+ * Middleware to check if client is logged into a session.
+ * Redirects root if yes.
+ */
 export async function redirectToHomeIfAuth(req, res, next) {
     if(req.session.userId) {
         return res.redirect('./')
