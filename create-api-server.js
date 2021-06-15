@@ -18,16 +18,21 @@ app.use(function(req, res, next) {
 
 const uriPrefix = '/api/';
 
-// Login
 /**
- * OUTPUT:
- *  accessToken
+ * API endpoint.
+ * 
+ * Route: "/api/login"
+ * Method: POST
+ * Returned parameter: "accessToken"
+ * 
+ * Description:
+ * Returnes access-token if authorized.
  */
 app.post(uriPrefix + 'login', async (req, res) => {
     try{
         const user = await checkCredentials(req.body);
         if (!user) {
-            res.status(404).send({ error: "user not found" })
+            return res.status(404).send({ error: "user not found" })
         }
         else {
             const token = jwt.sign(user, SECRET, {
@@ -35,24 +40,26 @@ app.post(uriPrefix + 'login', async (req, res) => {
                 issuer: 'localhost',
                 audience: String(user.id)
             });
-            res.status(200).send({ accessToken: token });
+            return res.status(200).send({ accessToken: token });
         }
     } catch(e){
-        console.error(e);
+        return res.status(400).send({ error: error });
 }
 });
 
 
 // Users
 
-// GET one where
 /**
- * INPUT:
- *  id
- *  username
+ * API endpoint.
  * 
- * OUTPUT:
- *  user{}
+ * Route: "/api/getUser"
+ * Method: GET
+ * Needed form parameters: "id", "username" (only one is required)
+ * Returned parameter: "user"
+ * 
+ * Description:
+ * Returns one matching user.
  */
 app.get(uriPrefix + 'getUser', verifyToken, async (req, res) => {
     try {
@@ -78,14 +85,16 @@ app.get(uriPrefix + 'getUser', verifyToken, async (req, res) => {
     }
 });
 
-// GET multiple (where)
 /**
- * INPUT:
- *  id,
- *  username
+ * API endpoint.
  * 
- * OUTPUT:
- *  users[]
+ * Route: "/api/getUsers"
+ * Method: GET
+ * Optional form parameters: "id", "username"
+ * Returned parameter: "users"
+ * 
+ * Description:
+ * Returns all matching users.
  */
 app.get(uriPrefix + 'getUsers', verifyToken, (req, res) => {
     try {
@@ -106,14 +115,16 @@ app.get(uriPrefix + 'getUsers', verifyToken, (req, res) => {
     }
 });
 
-// POST new
 /**
- * INPUT:
- *  username
- *  password
+ * API endpoint.
  * 
- * OUTPUT:
- *  id
+ * Route: "/api/addUser"
+ * Method: POST
+ * Needed form parameters: "username", "password"
+ * Returned parameter: "id"
+ * 
+ * Description:
+ * Adds a user.
  */
 app.post(uriPrefix + 'addUser', verifyToken, async (req, res) => {
     try {
@@ -138,15 +149,16 @@ app.post(uriPrefix + 'addUser', verifyToken, async (req, res) => {
     }
 });
 
-// PUT change
 /**
- * INPUT:
- *  id
- *  username
- *  password
+ * API endpoint.
  * 
- * OUTPUT:
- *  message
+ * Route: "/api/changeUser"
+ * Method: PUT
+ * Needed form parameter: "id"
+ * Returned parameter: "message"
+ * 
+ * Description:
+ * Changes an existing user.
  */
 app.put(uriPrefix + 'changeUser', verifyToken, (req, res) => {
     try {
@@ -171,13 +183,16 @@ app.put(uriPrefix + 'changeUser', verifyToken, (req, res) => {
     }
 });
 
-// DELETE where
 /**
- * INPUT:
- *  id
+ * API endpoint.
  * 
- * OUTPUT:
- *  message
+ * Route: "/api/deleteUser"
+ * Method: DELETE
+ * Needed form parameter: "id"
+ * Returned parameter: "message"
+ * 
+ * Description:
+ * Deletes an user.
  */
 app.delete(uriPrefix + 'deleteUser', verifyToken, (req, res) => {
     try {
@@ -201,14 +216,16 @@ app.delete(uriPrefix + 'deleteUser', verifyToken, (req, res) => {
 
 // Texts
 
-// GET text
 /**
- * INPUT:
- *  id
- *  userId
+ * API endpoint.
  * 
- * OUTPUT:
- *  textItem
+ * Route: "/api/getText"
+ * Method: GET
+ * Needed form parameters: "id", "userId" (only one is required)
+ * Returned parameter: "textItem"
+ * 
+ * Description:
+ * Returnes a matching text.
  */
 app.get(uriPrefix + 'getText', verifyToken, (req, res) => {
     try {
@@ -233,14 +250,16 @@ app.get(uriPrefix + 'getText', verifyToken, (req, res) => {
     }
 });
 
-// POST text
 /**
- * INPUT:
- *  text
- *  userId
+ * API endpoint.
  * 
- * OUTPUT:
- *  id
+ * Route: "/api/addText"
+ * Method: POST
+ * Needed form parameters: "text", "userId"
+ * Returned parameter: "id"
+ * 
+ * Description:
+ * Adds a text.
  */
 app.post(uriPrefix + 'addText', verifyToken, (req, res) => {
     try {
@@ -265,15 +284,16 @@ app.post(uriPrefix + 'addText', verifyToken, (req, res) => {
     }
 });
 
-// PUT text
 /**
- * INPUT:
- *  id
- *  text
- *  userId
+ * API endpoint.
  * 
- * OUTPUT:
- *  message
+ * Route: "/api/changeText"
+ * Method: PUT
+ * Needed form parameters: "id", "text", "userId"
+ * Returned parameters: "message"
+ * 
+ * Description:
+ * Changes an existing text.
  */
 app.put(uriPrefix + 'changeText', verifyToken, (req, res) => {
     try {
@@ -298,13 +318,16 @@ app.put(uriPrefix + 'changeText', verifyToken, (req, res) => {
     }
 });
 
-// DELETE text
 /**
- * INPUT:
- *  id
+ * API endpoint.
  * 
- * OUTPUT:
- *  message
+ * Route: "/api/deleteText"
+ * Method: DELETE
+ * Needed form parameter: "id"
+ * Returned parameters: "message"
+ * 
+ * Description:
+ * Deletes a text.
  */
 app.delete(uriPrefix + 'deleteText', verifyToken, (req, res) => {
     try {
@@ -329,5 +352,5 @@ app.delete(uriPrefix + 'deleteText', verifyToken, (req, res) => {
 // Listen
 app.listen(
     API_PORT,
-    () => console.log(`API-server is up and running on http://localhost:${API_PORT}`)
+    () => console.log(`API-API is up and running on http://localhost:${API_PORT}`)
 )

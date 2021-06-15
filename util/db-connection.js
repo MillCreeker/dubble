@@ -120,7 +120,7 @@ function getUsers(user) {
  * Get all UsersWithPassword in the database
  * @returns Promise that resolves to UserWithPassword[]
  */
-function getUsersWithPassword() {
+function getUsersWithPassword(user) {
     return new Promise(function (resolve, reject) {
         let hasId = false;
         let hasUsername = false;
