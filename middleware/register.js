@@ -30,4 +30,4 @@ export async function registerUser(req, res, next) {
         });
     }
     return res.redirect('.register');
-  }
+}

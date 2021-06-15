@@ -16,7 +16,7 @@ export async function checkCredentials(credentials) {
             if (user) {
                 bcrypt.compare(credentials.password, user.password).then(function(isAuthenticated) {
                     if (isAuthenticated) {
-                        const { password, ...userWithoutPassword } = user; // 'remove' password on object that will returned
+                        const { password, ...userWithoutPassword } = user; // 'remove' password on object that gets returned
                         resolve(userWithoutPassword);
                     } else {
                         resolve(undefined);

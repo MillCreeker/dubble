@@ -13,5 +13,8 @@ const SESSION_NAME = process.env.SESSION_NAME || 'dubble-session'
 // set runtime environment to switch between logic, depending on environment (production, development, ...). See ../notes/model.js
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
+// ReST API
+const API_PORT = Number(process.env.API_PORT) || 8082
+
 // export configurations
-export { NODE_ENV, WEBSOCKET_SERVER_PORT, DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, SECRET, SESSION_LIFETIME, SESSION_NAME };
+export { NODE_ENV, WEBSOCKET_SERVER_PORT, DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, SECRET, SESSION_LIFETIME, SESSION_NAME, API_PORT };
