@@ -17,7 +17,7 @@ const connectionPool = mysql.createPool({
 
 /**
  * Get a connection out of the pool
- * @returns connection
+ * @returns Promise that resolves to connection
  */
 function getConnection() {
     return new Promise(function(resolve, reject) {
@@ -29,9 +29,11 @@ function getConnection() {
     });
 };
 
-
-// Users
-
+/**
+ * Get a User in the database
+ * @param user User
+ * @returns Promise that resolves to User
+ */
 function getUser(user) {
     return new Promise(function (resolve, reject) {
         let condition = '';
@@ -69,7 +71,7 @@ function getUser(user) {
 
 /**
  * Get all Users in the database
- * @returns User[]
+ * @returns Promise that resolves to User[]
  */
 function getUsers(user) {
     return new Promise(function (resolve, reject) {
@@ -116,7 +118,7 @@ function getUsers(user) {
 
 /**
  * Get all UsersWithPassword in the database
- * @returns UserWithPassword[]
+ * @returns Promise that resolves to UserWithPassword[]
  */
 function getUsersWithPassword() {
     return new Promise(function (resolve, reject) {
@@ -162,6 +164,60 @@ function getUsersWithPassword() {
     });
 };
 
+/**
+ * Get a UsersWithPassword in the database
+ * @param user User
+ * @returns Promise that resolves to UserWithPassword
+ */
+ function getUserWithPassword(user) {
+    return new Promise(function (resolve, reject) {
+        let hasId = false;
+        let hasUsername = false;
+        if(typeof user.id != 'undefined' && user.id != null && user.id != ''){
+            hasId = true;
+        } else if (typeof user.username != 'undefined' && user.username != null && user.username != ''){
+            hasUsername = true;
+        }
+
+        let condition = '';
+        if (hasId === true && hasUsername === true){
+            condition = `WHERE id=${user.id} AND username="${user.username}"`;
+        } else if (hasId === true){
+            condition = `WHERE id=${user.id}`;
+        } else if (hasUsername === true){
+            condition = `WHERE username="${user.username}"`;
+        }
+
+        var sqlString = `
+            SELECT *
+            FROM users
+            ${condition};
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err);
+                } else {
+                    var itemList = [];
+                    result.forEach(element => {
+                        itemList.push(new UserWithPassword(element.id, element.username, element.password))
+                    });
+                    resolve(itemList);
+                }
+            });
+        }).catch(function(error) {
+            console.log('error is here');
+            reject(error);
+        });
+    });
+};
+
+/**
+ * Add a user to the database
+ * @param user User 
+ * @returns Promise that resolves to id
+ */
 function addUser(user) {
     return new Promise(function (resolve, reject) {
         var sqlString = `
@@ -184,6 +240,11 @@ function addUser(user) {
     });
 };
 
+/**
+ * Update a user in the database
+ * @param user User 
+ * @returns Promise that resolves to result
+ */
 function changeUser(user) {
     return new Promise(function (resolve, reject) {
         var sqlString = `
@@ -206,6 +267,11 @@ function changeUser(user) {
     });
 };
 
+/**
+ * Deletes a user from the database.
+ * @param id id of the user
+ * @returns Promise that resolves to result
+ */
 function deleteUser(id) {
     return new Promise(function (resolve, reject) {
         var sqlString = `
@@ -228,8 +294,11 @@ function deleteUser(id) {
 };
 
 
-// Texts
-
+/**
+ * Gets a TextItem from the database
+ * @param textItem TextItem
+ * @returns Promise that resolves to TextItem[]
+ */
 function getTextItem(textItem) {
     return new Promise(function (resolve, reject) {
         let hasId = false;
@@ -271,7 +340,7 @@ function getTextItem(textItem) {
 
 /**
  * Get all TextItems in the database
- * @returns TextItem[]
+ * @returns Promise that resolves to TextItem[]
  */
 function getTextItems() {
     return new Promise(function (resolve, reject) {
@@ -297,7 +366,7 @@ function getTextItems() {
 /**
  * Add a TextItem to the database.
  * @param TextItem text item 
- * @returns id
+ * @returns Promise that resolves to id
  */
 function addTextItem(textItem) {
     return new Promise(function (resolve, reject) {
@@ -321,6 +390,11 @@ function addTextItem(textItem) {
     });
 };
 
+/**
+ * Changes a TextItem in the database
+ * @param textItem TextItem 
+ * @returns Promise that resolves to id
+ */
 function changeTextItem(textItem) {
     return new Promise(function (resolve, reject) {
         var sqlString = `
@@ -343,6 +417,11 @@ function changeTextItem(textItem) {
     });
 };
 
+/**
+ * Deletes a TextItem from the database
+ * @param id id of TextItem
+ * @returns Promise that resolves to id
+ */
 function deleteTextItem(id) {
     return new Promise(function (resolve, reject) {
         var sqlString = `
@@ -369,6 +448,7 @@ const DBConnection = {
     getUser: getUser,
     getUsers: getUsers,
     getUsersWithPassword: getUsersWithPassword,
+    getUserWithPassword: getUserWithPassword,
     addUser: addUser,
     changeUser: changeUser,
     deleteUser: deleteUser,
