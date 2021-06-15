@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node .",
     "devStart": "nodemon server.js",
-    "create-db": "node ./scripts/create-database.js"
+    "create-db": "node ./scripts/create-database.js",
+    "setup-api": "nodemon ./create-api-server.js"
   },
   "contributors": [
     {
