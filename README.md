@@ -9,30 +9,35 @@
 Sharing text across devices via a websocket (for this demo locally)
 
 ## Criteria used
- - Best practice (of course)
- - WebSocket
- - (Access to Database CRUD)
- - Testing
- - Authentication
+- Best practice (of course)
+- WebSocket
+- (Access to Database CRUD)
+- Testing
+- Authentication
 
- ## Setup
- #### Installing Node dependencies
- Run in terminal/cmd:
- ```bs
- npm install
- ```
+## Setup
+### Installing Node dependencies
+Run in terminal/cmd:
+```bs
+npm install
+```
 
- #### Setting up the database
- You need a running MySQL installation in the background.
- Enter your database login-information in the DATABASE parameters inside the .env file.
+### Setting up the database
+You need a running MySQL installation in the background.
+Enter your database login-information in the DATABASE parameters inside the .env file.
 
- If all requirements are satisfied, run following command in your terminal/cmd: 
-  ```bs
- npm run create-db
- ```
+If all requirements are satisfied, run following command in your terminal/cmd: 
+```bs
+npm run create-db
+```
 
- #### Starting the server
- Run in terminal/cmd:
- ```bs
- npm start
- ```
+### Starting the API Server
+Run in terminal/cmd:
+```bs
+npm setup-api
+```
+### Starting the server
+Run in terminal/cmd:
+```bs
+npm start
+```

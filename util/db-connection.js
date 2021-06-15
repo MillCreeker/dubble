@@ -17,7 +17,7 @@ const connectionPool = mysql.createPool({
 
 function getConnection() {
     return new Promise(function(resolve, reject) {
-      connectionPool
+        connectionPool
         .getConnection(function(err, connection) {
             if (err) reject(err);
             resolve(connection);
@@ -25,37 +25,112 @@ function getConnection() {
     });
 };
 
-function getTextItems() {
+
+// Users
+
+function getUser(user) {
     return new Promise(function (resolve, reject) {
-        var sql_string = `
-            SELECT * FROM text_items;
-        `
+        let condition = '';
+        if(typeof user.id != 'undefined' && user.id != null && user.id != ''){
+            condition = `WHERE id=${user.id}`;
+        } else if (typeof user.username != 'undefined' && user.username != null && user.username != ''){
+            condition = `WHERE username="${user.username}"`;
+        }
+
+        var sqlString = `
+            SELECT id, username
+            FROM users
+            ${condition}
+            LIMIT 1;
+        `;
         getConnection().then(function(connection) {
-            connection.query(sql_string, function (err, result, fields) {
+            connection.query(sqlString, function (err, result, fields) {
                 connection.release();
                 if (err) {
-                    reject(err);
+                    reject(err)
                 } else {
                     var itemList = [];
                     result.forEach(element => {
-                        itemList.push(new TextItem(element.id, element.text, element.user_id))
+                        itemList.push(new User(element.id, element.username))
                     });
                     resolve(itemList);
                 }
-            }).catch(function(error) {
-                reject(error);
             });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
+function getUsers(user) {
+    return new Promise(function (resolve, reject) {
+        let hasId = false;
+        let hasUsername = false;
+        if(typeof user.id != 'undefined' && user.id != null && user.id != ''){
+            hasId = true;
+        } else if (typeof user.username != 'undefined' && user.username != null && user.username != ''){
+            hasUsername = true;
+        }
+
+        let condition = '';
+        if (hasId === true && hasUsername === true){
+            condition = `WHERE id=${user.id} AND username="${user.username}"`;
+        } else if (hasId === true){
+            condition = `WHERE id=${user.id}`;
+        } else if (hasUsername === true){
+            condition = `WHERE username="${user.username}"`;
+        }
+
+        var sqlString = `
+            SELECT id, username
+            FROM users
+            ${condition};
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    var itemList = [];
+                    result.forEach(element => {
+                        itemList.push(new User(element.id, element.username))
+                    });
+                    resolve(itemList);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
         });
     });
 };
 
 function getUsersWithPassword() {
     return new Promise(function (resolve, reject) {
-        var sql_string = `
-            SELECT * FROM users;
-        `
+        let hasId = false;
+        let hasUsername = false;
+        if(typeof user.id != 'undefined' && user.id != null && user.id != ''){
+            hasId = true;
+        } else if (typeof user.username != 'undefined' && user.username != null && user.username != ''){
+            hasUsername = true;
+        }
+
+        let condition = '';
+        if (hasId === true && hasUsername === true){
+            condition = `WHERE id=${user.id} AND username="${user.username}"`;
+        } else if (hasId === true){
+            condition = `WHERE id=${user.id}`;
+        } else if (hasUsername === true){
+            condition = `WHERE username="${user.username}"`;
+        }
+
+        var sqlString = `
+            SELECT *
+            FROM users
+            ${condition};
+        `;
         getConnection().then(function(connection) {
-            connection.query(sql_string, function (err, result, fields) {
+            connection.query(sqlString, function (err, result, fields) {
                 connection.release();
                 if (err) {
                     reject(err);
@@ -74,37 +149,15 @@ function getUsersWithPassword() {
     });
 };
 
-function getUsers() {
-    return new Promise(function (resolve, reject) {
-        var sql_string = `
-            SELECT id, username FROM users;
-        `
-        getConnection().then(function(connection) {
-            connection.query(sql_string, function (err, result, fields) {
-                connection.release();
-                if (err) {
-                    reject(err)
-                } else {
-                    var itemList = [];
-                    result.forEach(element => {
-                        itemList.push(new User(element.id, element.username))
-                    });
-                    resolve(itemList);
-                }
-            });
-        }).catch(function(error) {
-            reject(error);
-        });
-    });
-};
-
 function addUser(user) {
     return new Promise(function (resolve, reject) {
-        var sql_string = `
-            INSERT INTO users (username, password) VALUES (?,?);
-        `
+        var sqlString = `
+            INSERT INTO users
+            (username, password)
+            VALUES (?,?);
+        `;
         getConnection().then(function(connection) {
-            connection.query(sql_string, [user.username, user.password], function (err, result, fields) {
+            connection.query(sqlString, [user.username, user.password], function (err, result, fields) {
                 connection.release();
                 if (err) {
                     reject(err)
@@ -118,13 +171,164 @@ function addUser(user) {
     });
 };
 
-function addTextItem(text_item) {
+function changeUser(user) {
     return new Promise(function (resolve, reject) {
-        var sql_string = `
-            INSERT INTO text_items (text, user_id) VALUES (?,?);
-        `
+        var sqlString = `
+            UPDATE users
+            SET username=?, password=?
+            WHERE id=?;
+        `;
         getConnection().then(function(connection) {
-            connection.query(sql_string, [text_item.text, text_item.user_id], function (err, result, fields) {
+            connection.query(sqlString, [user.username, user.password, user.id], function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
+function deleteUser(id) {
+    return new Promise(function (resolve, reject) {
+        var sqlString = `
+            DELETE FROM users
+            WHERE id=?;
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, [id], function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
+
+// Texts
+
+function getTextItem(textItem) {
+    return new Promise(function (resolve, reject) {
+        let hasId = false;
+        let hasUserId = false;
+        if(typeof textItem.id != 'undefined' && textItem.id != null && textItem.id != ''){
+            hasId = true;
+        } else if (typeof textItem.userId != 'undefined' && textItem.userId != null && textItem.userId != ''){
+            hasUserId = true;
+        }
+
+        let condition = '';
+        if (hasId === true && hasUserId === true){
+            condition = `WHERE id=${textItem.id} AND username="${textItem.userId}"`;
+        } else if (hasId === true){
+            condition = `WHERE id=${textItem.id}`;
+        } else if (hasUserId === true){
+            condition = `WHERE username="${textItem.userId}"`;
+        }
+
+        var sqlString = `
+            SELECT *
+            FROM text_items
+            ${condition};
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
+function getTextItems() {
+    return new Promise(function (resolve, reject) {
+        var sqlString = `
+            SELECT *
+            FROM text_items;
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
+function addTextItem(textItem) {
+    return new Promise(function (resolve, reject) {
+        var sqlString = `
+            INSERT INTO
+            text_items
+            (text, user_id) VALUES (?,?);
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, [textItem.text, textItem.userId], function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result.insertId);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
+function changeTextItem(textItem) {
+    return new Promise(function (resolve, reject) {
+        var sqlString = `
+            UPDATE text_items
+            SET text=?, user_id=?
+            WHERE id=?;
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, [textItem.text, textItem.userId, textItem.id], function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result.insertId);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
+function deleteTextItem(id) {
+    return new Promise(function (resolve, reject) {
+        var sqlString = `
+            DELETE FROM text_items
+            WHERE id=?;
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, [id], function (err, result, fields) {
                 connection.release();
                 if (err) {
                     reject(err)
@@ -140,11 +344,17 @@ function addTextItem(text_item) {
 
 const DBConnection = {
     getConnection: getConnection,
-    getTextItems: getTextItems,
-    getUsersWithPassword: getUsersWithPassword,
+    getUser: getUser,
     getUsers: getUsers,
+    getUsersWithPassword: getUsersWithPassword,
     addUser: addUser,
+    changeUser: changeUser,
+    deleteUser: deleteUser,
+    getTextItem: getTextItem,
+    getTextItems: getTextItems,
     addTextItem: addTextItem,
+    changeTextItem: changeTextItem,
+    deleteTextItem: deleteTextItem
 }
 
 export { DBConnection };
