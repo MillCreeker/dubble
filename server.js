@@ -13,6 +13,9 @@ import { registerUser } from './middleware/register.js';
 import store from 'express-mysql-session';
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
+import bodyParser from 'body-parser';
+import { check, validationResult } from 'express-validator';
+import ws from 'ws';
 import { sessionAuth, redirectToHomeIfAuth } from './middleware/session-authorize.js';
 
 const MySQLStore = store(session);
@@ -33,6 +36,13 @@ const sessionStore = new MySQLStore(conOptions);
 // actvate url encoding for the server
 app.use(express.urlencoded({extended: true}));
 // setup session handling
+app.use('/', express.static('public'))
+
+// let server listen to port configured in .env
+const server = app.listen(WEBSOCKET_SERVER_PORT, () => {
+  console.log(`Server is up and running on http://localhost:${WEBSOCKET_SERVER_PORT}`);
+});
+
 app.use(session({
   name: SESSION_NAME,
   secret: SECRET,
@@ -45,6 +55,15 @@ app.use(session({
     secure: false,
   }
 }));
+
+const wss = new ws.Server({server});
+wss.on('message', function incoming(data) {  
+  wss.clients.forEach(function each(client) { 
+    if(client != ws && client.readyState == WebSocket.OPEN){
+      client.send(data);
+    }
+  })
+})
 
 // setup view engine as "pug"
 app.set('view engine', 'pug');
@@ -154,8 +173,4 @@ app.post('/logout', async (req, res) => {
   });
 });
 
-// let server listen to port configured in .env
-app.listen(WEBSOCKET_SERVER_PORT, () => {
-  console.log(`Server is up and running on http://localhost:${WEBSOCKET_SERVER_PORT}`);
-});
 
