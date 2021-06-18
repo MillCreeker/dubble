@@ -55,7 +55,8 @@ function createTables() {
     text longtext NULL,
     user_id int NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT UNIQ_user_id UNIQUE (user_id)
   );
   `;
   // create connection to the database

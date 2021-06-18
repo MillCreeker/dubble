@@ -23,14 +23,20 @@ const uriPrefix = '/api/';
  * 
  * Route: "/api/login"
  * Method: POST
+ * Needed parameters: "username", "password"
  * Returned parameter: "accessToken"
  * 
  * Description:
+ * NOT PART OF THE ACTUAL API
  * Returnes access-token if authorized.
  */
 app.post(uriPrefix + 'login', async (req, res) => {
     try{
-        const user = await checkCredentials(req.body);
+        const user = await checkCredentials({
+            username: req.body.username,
+            password: req.body.password
+        });
+        console.log(user);
         if (!user) {
             return res.status(404).send({ error: "user not found" })
         }
@@ -53,26 +59,19 @@ app.post(uriPrefix + 'login', async (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/getUser"
+ * Route: "/api/user"
  * Method: GET
- * Needed form parameters: "id", "username" (only one is required)
  * Returned parameter: "user"
  * 
  * Description:
- * Returns one matching user.
+ * Returns the user's information.
  */
-app.get(uriPrefix + 'getUser', verifyToken, async (req, res) => {
+app.get(uriPrefix + 'user', verifyToken, async (req, res) => {
     try {
-        const user = req.body;
-
-        if( (typeof user.id == 'undefined' || user.id == null || user.id == '') &&
-            (typeof user.username == 'undefined' || user.username == null || user.username == '') ){
-            return res.status(400).send({ error: "no parameters specified" });
-        }
+        const id = req.user.id;
 
         DBConnection.getUser({
-            id: user.id,
-            username: user.username
+            id: id
         })
         .then(r => {
             return res.status(200).send({ user: r[0] });
@@ -88,118 +87,17 @@ app.get(uriPrefix + 'getUser', verifyToken, async (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/getUsers"
- * Method: GET
- * Optional form parameters: "id", "username"
- * Returned parameter: "users"
- * 
- * Description:
- * Returns all matching users.
- */
-app.get(uriPrefix + 'getUsers', verifyToken, (req, res) => {
-    try {
-        const user = req.body;
-
-        DBConnection.getUsers({
-            id: user.id,
-            username: user.username
-        })
-        .then(r => {
-            return res.status(200).send({ users: r });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
-    } catch (error) {
-        return res.status(400).send({ error: error });
-    }
-});
-
-/**
- * API endpoint.
- * 
- * Route: "/api/addUser"
- * Method: POST
- * Needed form parameters: "username", "password"
- * Returned parameter: "id"
- * 
- * Description:
- * Adds a user.
- */
-app.post(uriPrefix + 'addUser', verifyToken, async (req, res) => {
-    try {
-        const user = req.body;
-        if( (typeof user.username == 'undefined' || user.username == null || user.username == '') ||
-            (typeof user.password == 'undefined' || user.password == null || user.password == '') ){
-            return res.status(400).send({ error: "not all parameters specified" });
-        }
-
-        DBConnection.addUser({
-            username: user.username,
-            password: user.password
-        })
-        .then(r => {
-            return res.status(200).send({ id: r });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
-    } catch (error) {
-        return res.status(400).send({ error: error });
-    }
-});
-
-/**
- * API endpoint.
- * 
- * Route: "/api/changeUser"
- * Method: PUT
- * Needed form parameter: "id"
- * Returned parameter: "message"
- * 
- * Description:
- * Changes an existing user.
- */
-app.put(uriPrefix + 'changeUser', verifyToken, (req, res) => {
-    try {
-        const user = req.body;
-        if(typeof user.id == 'undefined' || user.id == null || user.id == ''){
-            return res.status(400).send({ error: "not all required parameters specified" });
-        }
-
-        DBConnection.changeUser({
-            id: user.id,
-            username: user.username,
-            password: user.password
-        })
-        .then(r => {
-            return res.status(200).send({ message: "success" });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
-    } catch (error) {
-        return res.status(400).send({ error: error });
-    }
-});
-
-/**
- * API endpoint.
- * 
- * Route: "/api/deleteUser"
+ * Route: "/api/user"
  * Method: DELETE
  * Needed form parameter: "id"
  * Returned parameter: "message"
  * 
  * Description:
- * Deletes an user.
+ * Deletes the user.
  */
-app.delete(uriPrefix + 'deleteUser', verifyToken, (req, res) => {
+app.delete(uriPrefix + 'user', verifyToken, (req, res) => {
     try {
-        const id = req.body.id;
-        if(typeof id == 'undefined' || id == null || id == ''){
-            return res.status(400).send({ error: "not all required parameters specified" });
-        }
+        const id = req.user.id;
 
         DBConnection.deleteUser(id)
         .then(r => {
@@ -219,25 +117,19 @@ app.delete(uriPrefix + 'deleteUser', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/getText"
+ * Route: "/api/text"
  * Method: GET
- * Needed form parameters: "id", "userId" (only one is required)
  * Returned parameter: "textItem"
  * 
  * Description:
- * Returnes a matching text.
+ * Returnes the user's text.
  */
-app.get(uriPrefix + 'getText', verifyToken, (req, res) => {
+app.get(uriPrefix + 'text', verifyToken, (req, res) => {
     try {
-        const textItem = req.body;
-        if( (typeof textItem.id == 'undefined' || textItem.id == null || textItem.id == '') &&
-            (typeof textItem.userId == 'undefined' || textItem.userId == null || textItem.userId == '')){
-            return res.status(400).send({ error: "no required parameter specified" });
-        }
+        const userId = req.user.id;
 
-        DBConnection.getTextItems({
-            id: textItem.id,
-            userId: textItem.userId
+        DBConnection.getTextItem({
+            userId: userId
         })
         .then(r => {
             return res.status(200).send({ textItem: r[0] });
@@ -253,25 +145,26 @@ app.get(uriPrefix + 'getText', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/addText"
+ * Route: "/api/text/:content"
  * Method: POST
- * Needed form parameters: "text", "userId"
  * Returned parameter: "id"
  * 
  * Description:
- * Adds a text.
+ * Adds a text from the user.
  */
-app.post(uriPrefix + 'addText', verifyToken, (req, res) => {
+app.post(uriPrefix + 'text/:content', verifyToken, (req, res) => {
     try {
-        const textItem = req.body;
-        if( (typeof textItem.text == 'undefined' || textItem.text == null || textItem.text == '') ||
-            (typeof textItem.userId == 'undefined' || textItem.userId == null || textItem.userId == '') ){
+
+        const userId = req.user.id;
+        const content = req.params.content;
+
+        if(typeof content == 'undefined' || content == null || content == ''){
             return res.status(400).send({ error: "not all parameters specified" });
         }
 
         DBConnection.addTextItem({
-            text: textItem.text,
-            userId: textItem.userId
+            text: content,
+            userId: userId
         })
         .then(r => {
             return res.status(200).send({ id: r });
@@ -287,25 +180,21 @@ app.post(uriPrefix + 'addText', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/changeText"
+ * Route: "/api/text:content"
  * Method: PUT
- * Needed form parameters: "id", "text", "userId"
  * Returned parameters: "message"
  * 
  * Description:
- * Changes an existing text.
+ * Changes the user's text.
  */
-app.put(uriPrefix + 'changeText', verifyToken, (req, res) => {
+app.put(uriPrefix + 'text/:content', verifyToken, (req, res) => {
     try {
-        const textItem = req.body;
-        if(typeof textItem.id == 'undefined' || textItem.id == null || textItem.id == ''){
-            return res.status(400).send({ error: "not all parameters specified" });
-        }
-
+        const userId = req.user.id;
+        const content = req.params.content;
+        
         DBConnection.changeTextItem({
-            id: textItem.id,
-            text: textItem.text,
-            userId: textItem.userId
+            text: content,
+            userId: userId
         })
         .then(r => {
             return res.status(200).send({ message: "success" });
@@ -321,22 +210,18 @@ app.put(uriPrefix + 'changeText', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/deleteText"
+ * Route: "/api/text"
  * Method: DELETE
- * Needed form parameter: "id"
  * Returned parameters: "message"
  * 
  * Description:
- * Deletes a text.
+ * Deletes the user's text.
  */
-app.delete(uriPrefix + 'deleteText', verifyToken, (req, res) => {
+app.delete(uriPrefix + 'text', verifyToken, (req, res) => {
     try {
-        const id = req.body.id;
-        if(typeof id == 'undefined' || id == null || id == ''){
-            return res.status(400).send({ error: "not all parameters specified" });
-        }
+        const userId = req.user.id;
 
-        DBConnection.deleteTextItem(id)
+        DBConnection.deleteTextItem(userId)
         .then(r => {
             return res.status(200).send({ message: "success" });
         })

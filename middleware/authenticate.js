@@ -11,7 +11,7 @@ export async function checkCredentials(credentials) {
 
         // check if user with given username exists
         const user = users.find((u) => u.username === credentials.username);
-
+        console.log(user);
         // when user exists, check if given password is correct
         return new Promise((resolve, reject) => {
             if (user) {
