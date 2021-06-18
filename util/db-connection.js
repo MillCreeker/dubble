@@ -43,7 +43,7 @@ function getUser(user) {
             condition = `WHERE username="${user.username}"`;
         }
 
-        var sqlString = `
+        const sqlString = `
             SELECT id, username
             FROM users
             ${condition}
@@ -73,29 +73,12 @@ function getUser(user) {
  * Get all Users in the database
  * @returns Promise that resolves to User[]
  */
-function getUsers(user) {
+function getUsers() {
     return new Promise(function (resolve, reject) {
-        let hasId = false;
-        let hasUsername = false;
-        if(typeof user.id != 'undefined' && user.id != null && user.id != ''){
-            hasId = true;
-        } else if (typeof user.username != 'undefined' && user.username != null && user.username != ''){
-            hasUsername = true;
-        }
 
-        let condition = '';
-        if (hasId === true && hasUsername === true){
-            condition = `WHERE id=${user.id} AND username="${user.username}"`;
-        } else if (hasId === true){
-            condition = `WHERE id=${user.id}`;
-        } else if (hasUsername === true){
-            condition = `WHERE username="${user.username}"`;
-        }
-
-        var sqlString = `
+        const sqlString = `
             SELECT id, username
-            FROM users
-            ${condition};
+            FROM users;
         `;
         getConnection().then(function(connection) {
             connection.query(sqlString, function (err, result, fields) {
@@ -120,29 +103,12 @@ function getUsers(user) {
  * Get all UsersWithPassword in the database
  * @returns Promise that resolves to UserWithPassword[]
  */
-function getUsersWithPassword(user) {
+function getUsersWithPassword() {
     return new Promise(function (resolve, reject) {
-        let hasId = false;
-        let hasUsername = false;
-        if(typeof user.id != 'undefined' && user.id != null && user.id != ''){
-            hasId = true;
-        } else if (typeof user.username != 'undefined' && user.username != null && user.username != ''){
-            hasUsername = true;
-        }
 
-        let condition = '';
-        if (hasId === true && hasUsername === true){
-            condition = `WHERE id=${user.id} AND username="${user.username}"`;
-        } else if (hasId === true){
-            condition = `WHERE id=${user.id}`;
-        } else if (hasUsername === true){
-            condition = `WHERE username="${user.username}"`;
-        }
-
-        var sqlString = `
+        const sqlString = `
             SELECT *
-            FROM users
-            ${condition};
+            FROM users;
         `;
         getConnection().then(function(connection) {
             connection.query(sqlString, function (err, result, fields) {
@@ -188,7 +154,7 @@ function getUsersWithPassword(user) {
             condition = `WHERE username="${user.username}"`;
         }
 
-        var sqlString = `
+        const sqlString = `
             SELECT *
             FROM users
             ${condition};
@@ -311,14 +277,14 @@ function getTextItem(textItem) {
 
         let condition = '';
         if (hasId === true && hasUserId === true){
-            condition = `WHERE id=${textItem.id} AND username="${textItem.userId}"`;
+            condition = `WHERE id=${textItem.id} AND user_id="${textItem.userId}"`;
         } else if (hasId === true){
             condition = `WHERE id=${textItem.id}`;
         } else if (hasUserId === true){
-            condition = `WHERE username="${textItem.userId}"`;
+            condition = `WHERE user_id="${textItem.userId}"`;
         }
 
-        var sqlString = `
+        const sqlString = `
             SELECT *
             FROM text_items
             ${condition};
@@ -344,7 +310,7 @@ function getTextItem(textItem) {
  */
 function getTextItems() {
     return new Promise(function (resolve, reject) {
-        var sqlString = `
+        const sqlString = `
             SELECT *
             FROM text_items;
         `;
@@ -397,10 +363,10 @@ function addTextItem(textItem) {
  */
 function changeTextItem(textItem) {
     return new Promise(function (resolve, reject) {
-        var sqlString = `
+        const sqlString = `
             UPDATE text_items
-            SET text=?, user_id=?
-            WHERE id=?;
+            SET text=?
+            WHERE user_id=?;
         `;
         getConnection().then(function(connection) {
             connection.query(sqlString, [textItem.text, textItem.userId, textItem.id], function (err, result, fields) {
@@ -426,7 +392,7 @@ function deleteTextItem(id) {
     return new Promise(function (resolve, reject) {
         var sqlString = `
             DELETE FROM text_items
-            WHERE id=?;
+            WHERE user_id=?;
         `;
         getConnection().then(function(connection) {
             connection.query(sqlString, [id], function (err, result, fields) {
