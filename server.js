@@ -13,13 +13,16 @@ import { registerUser } from './middleware/register.js';
 import store from 'express-mysql-session';
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
-import bodyParser from 'body-parser';
-import { check, validationResult } from 'express-validator';
 import ws from 'ws';
 import { sessionAuth, redirectToHomeIfAuth } from './middleware/session-authorize.js';
 
 const MySQLStore = store(session);
 const app = express();
+
+// let server listen to port configured in .env
+const server = app.listen(WEBSOCKET_SERVER_PORT, () => {
+  console.log(`Server is up and running on http://localhost:${WEBSOCKET_SERVER_PORT}`);
+});
 
 // database configuration. Configure it in the .env file.
 const conOptions = {
@@ -34,14 +37,11 @@ const conOptions = {
 const sessionStore = new MySQLStore(conOptions);
 
 // actvate url encoding for the server
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 // setup session handling
 app.use('/', express.static('public'))
 
-// let server listen to port configured in .env
-const server = app.listen(WEBSOCKET_SERVER_PORT, () => {
-  console.log(`Server is up and running on http://localhost:${WEBSOCKET_SERVER_PORT}`);
-});
+
 
 app.use(session({
   name: SESSION_NAME,
@@ -56,10 +56,10 @@ app.use(session({
   }
 }));
 
-const wss = new ws.Server({server});
-wss.on('message', function incoming(data) {  
-  wss.clients.forEach(function each(client) { 
-    if(client != ws && client.readyState == WebSocket.OPEN){
+const wss = new ws.Server({ server });
+wss.on('message', function incoming(data) {
+  wss.clients.forEach(function each(client) {
+    if (client != ws && client.readyState == WebSocket.OPEN) {
       client.send(data);
     }
   })
@@ -69,7 +69,7 @@ wss.on('message', function incoming(data) {
 app.set('view engine', 'pug');
 
 // set directory for views
-app.set('views','./views');
+app.set('views', './views');
 
 /**
  * Server endpoint.
@@ -113,9 +113,16 @@ app.get('/login', redirectToHomeIfAuth, async (req, res) => {
  * Redirects to "/login" if login fails.
  */
 app.post('/login', redirectToHomeIfAuth, async (req, res) => {
+
   if (req.body.username && req.body.password) {
     const user = await checkCredentials(req.body);
     if (user) {
+      const token = jwt.sign(user, SECRET, {
+        expiresIn: 86400, // 24 hours
+        issuer: 'localhost',
+        audience: String(user.id)
+      });
+      req.session.token = token;
       req.session.userId = user.id;
       return res.redirect('/');
     }
@@ -173,4 +180,4 @@ app.post('/logout', async (req, res) => {
   });
 });
 
-
+export default app

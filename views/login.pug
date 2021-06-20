@@ -1,7 +1,7 @@
 extends layout
 block content
-    .container
-        .row
+    div.container
+        div.row
         div.text-center
             form(class="form-signin" id="auth" method="POST" action="/login")
                 #error
@@ -9,19 +9,19 @@ block content
                         p.text-danger Error!!!
 
                 - var h1Classes = ['h3', 'mb-3', 'font-weight-normal']
-                h1(class=h1Classes) Please sign in
+                h1.mt-5.pt-5(class=h1Classes) Please sign in
 
                 //-input email
                 label( for="inputUsername" class="sr-only") Username
-                input(type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus)
+                input.mt-5(type="text" name="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus)
 
                 //-input password
                 label(for="inputPassword" class="sr-only") Password
-                input(type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required)
+                input.mt-3(type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required)
 
                 //-signIn button
                 - var buttonClass=['btn', 'btn-lg', 'btn-primary', 'btn-block'];
-                button(class=buttonClass type="submit") Sign in
+                button.mt-5(class=buttonClass type="submit") Sign in
 
                 - var registerClass=[];
                 a(class=registerClass href="./register") Register

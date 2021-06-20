@@ -8,7 +8,9 @@
     "start": "node .",
     "devStart": "nodemon server.js",
     "create-db": "node ./scripts/create-database.js",
-    "setup-api": "nodemon ./create-api-server.js"
+    "setup-api": "nodemon ./create-api-server.js",
+    "debug": "node --experimental-vm-modules --inspect-brk  node_modules/jest/bin/jest.js --runInBand",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "contributors": [
     {
@@ -32,7 +34,7 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.6.0",
     "express": "^4.17.1",
     "express-mysql-session": "^2.1.6",
     "express-session": "^1.17.2",
@@ -44,7 +46,16 @@
     "pug": "^3.0.2",
     "sequelize": "^6.6.2",
     "uuid": "^8.3.2",
-    "websocket": "^1.0.33",
+    "websocket": "^1.0.34",
     "ws": "^7.5.0"
+  },
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "jest-environment-node",
+    "transform": {}
+  },
+  "devDependencies": {
+    "jest": "^27.0.4",
+    "supertest": "^6.1.3"
   }
 }

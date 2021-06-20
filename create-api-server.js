@@ -8,7 +8,7 @@ import { DBConnection } from './util/db-connection.js';
 const app = express();
 app.use(express.json());
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header(
         "Access-Control-Allow-Headers",
         "x-access-token, Origin, Content-Type, Accept"
@@ -31,7 +31,7 @@ const uriPrefix = '/api/';
  * Returnes access-token if authorized.
  */
 app.post(uriPrefix + 'login', async (req, res) => {
-    try{
+    try {
         const user = await checkCredentials({
             username: req.body.username,
             password: req.body.password
@@ -48,9 +48,9 @@ app.post(uriPrefix + 'login', async (req, res) => {
             });
             return res.status(200).send({ accessToken: token });
         }
-    } catch(e){
+    } catch (e) {
         return res.status(400).send({ error: error });
-}
+    }
 });
 
 
@@ -73,12 +73,12 @@ app.get(uriPrefix + 'user', verifyToken, async (req, res) => {
         DBConnection.getUser({
             id: id
         })
-        .then(r => {
-            return res.status(200).send({ user: r[0] });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
+            .then(r => {
+                return res.status(200).send({ user: r[0] });
+            })
+            .catch(e => {
+                return res.status(500).send({ error: e });
+            });
     } catch (error) {
         return res.status(400).send({ error: error });
     }
@@ -100,12 +100,12 @@ app.delete(uriPrefix + 'user', verifyToken, (req, res) => {
         const id = req.user.id;
 
         DBConnection.deleteUser(id)
-        .then(r => {
-            return res.status(200).send({ message: "success" });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
+            .then(r => {
+                return res.status(200).send({ message: "success" });
+            })
+            .catch(e => {
+                return res.status(500).send({ error: e });
+            });
     } catch (error) {
         return res.status(400).send({ error: error });
     }
@@ -131,12 +131,12 @@ app.get(uriPrefix + 'text', verifyToken, (req, res) => {
         DBConnection.getTextItem({
             userId: userId
         })
-        .then(r => {
-            return res.status(200).send({ textItem: r[0] });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
+            .then(r => {
+                return res.status(200).send({ textItem: r[0] });
+            })
+            .catch(e => {
+                return res.status(500).send({ error: e });
+            });
     } catch (error) {
         return res.status(400).send({ error: error });
     }
@@ -158,7 +158,7 @@ app.post(uriPrefix + 'text/:content', verifyToken, (req, res) => {
         const userId = req.user.id;
         const content = req.params.content;
 
-        if(typeof content == 'undefined' || content == null || content == ''){
+        if (typeof content == 'undefined' || content == null || content == '') {
             return res.status(400).send({ error: "not all parameters specified" });
         }
 
@@ -166,12 +166,12 @@ app.post(uriPrefix + 'text/:content', verifyToken, (req, res) => {
             text: content,
             userId: userId
         })
-        .then(r => {
-            return res.status(200).send({ id: r });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
+            .then(r => {
+                return res.status(200).send({ id: r });
+            })
+            .catch(e => {
+                return res.status(500).send({ error: e });
+            });
     } catch (error) {
         return res.status(400).send({ error: error });
     }
@@ -191,17 +191,17 @@ app.put(uriPrefix + 'text/:content', verifyToken, (req, res) => {
     try {
         const userId = req.user.id;
         const content = req.params.content;
-        
+
         DBConnection.changeTextItem({
             text: content,
             userId: userId
         })
-        .then(r => {
-            return res.status(200).send({ message: "success" });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
+            .then(r => {
+                return res.status(200).send({ message: "success" });
+            })
+            .catch(e => {
+                return res.status(500).send({ error: e });
+            });
     } catch (error) {
         return res.status(400).send({ error: error });
     }
@@ -222,12 +222,12 @@ app.delete(uriPrefix + 'text', verifyToken, (req, res) => {
         const userId = req.user.id;
 
         DBConnection.deleteTextItem(userId)
-        .then(r => {
-            return res.status(200).send({ message: "success" });
-        })
-        .catch(e => {
-            return res.status(500).send({ error: e });
-        });
+            .then(r => {
+                return res.status(200).send({ message: "success" });
+            })
+            .catch(e => {
+                return res.status(500).send({ error: e });
+            });
     } catch (error) {
         return res.status(400).send({ error: error });
     }
@@ -239,3 +239,5 @@ app.listen(
     API_PORT,
     () => console.log(`API-API is up and running on http://localhost:${API_PORT}`)
 )
+
+export default app;
