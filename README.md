@@ -34,8 +34,7 @@ Sharing text across devices via a WebSocket or API. The text is only available i
 
 ### Total reachable points:
 
-<ins>**58%**</ins>
-
+<ins>**60%**</ins>
 ## Installation/Prerequisites
 
 ### Needed dependencies
@@ -199,10 +198,11 @@ WebSockets allow interactive communication, work similar to UDP and has the reli
 ### Jest
 
 [Jest](https://jestjs.io/) is a testing framework that is very simple to use and in this project it is used in conjunction with Node. Jest is used for testing the REST API and the Server. It is used to confirm that the redirects work and that e.g login and registering works.
-
 ## Known issues
 
-We have not yet implemented a refresh-token, so JWT's are not very safe.
+- We have not yet implemented a refresh-token, so JWT's are not very safe.
 For this demo, we have not implemented https, which also lowers the security.
-
-## Useful links
+- We implemented a testing-enviroment and a way to switch between it and the developmental one.
+Unfortunatelly, the [config.js](util/config.js) folder does not refresh its variables from the [.env](config) files automatically but at (seemingly) random and far-spaced intervals.
+Due to this fact, multiple components tried to access the wrong database until it eventually *did* refresh. <br>
+Therefore, we chose not to include it.

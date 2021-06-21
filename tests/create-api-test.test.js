@@ -3,7 +3,9 @@ import request from "supertest";
 import { DBConnection } from "../util/db-connection.js";
 
 const uriPrefix = '/api/';
+const username = "test";
 var token = '';
+
 
 /**
  * Positive tests
@@ -14,7 +16,7 @@ describe("POST login", () => {
         const response = await request(app)
         .post(uriPrefix + "login")
         .send({
-            username: "test",
+            username: username,
             password: "test"
         });
         expect(typeof response.body.accessToken).toBe("string");
@@ -28,7 +30,7 @@ describe("GET user", () => {
         const response = await request(app)
         .get(uriPrefix + "user")
         .set("x-access-token", token);
-        expect(response.body.user.username).toBe("test");
+        expect(response.body.user.username).toBe(username);
         expect(response.statusCode).toBe(200);
     });
 });

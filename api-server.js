@@ -46,7 +46,7 @@ app.post(uriPrefix + 'login', async (req, res) => {
             username: req.body.username,
             password: req.body.password
         });
-        console.log(user);
+
         if (!user) {
             return res.status(404).send({ error: "user not found" })
         }
