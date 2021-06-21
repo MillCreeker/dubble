@@ -32,7 +32,7 @@ Sharing text across devices via a WebSocket or API. The text is only available i
 - Authentication *8%*
 - Good practice *6%*
 
-### Total points reached:
+### Total reachable points:
 
 <ins>**58%**</ins>
 
@@ -100,7 +100,7 @@ If everything ist set up, run following in terminal/cmd:
 npm run tests
 ```
 
-To revert to the developer environment, run the environment setup commands again and replace **test** with **development**
+To revert to the developer environment, run the environment setup commands again and replace **test** with **development**.
 
 ### Starting the Tests with node debugger
 
@@ -154,12 +154,22 @@ This means that users can only ever edit/view their own settings and texts.
   - Permanently deletes a user from the database
 - text *GET*
   - Returns the user’s text
-- user/text/**content** *POST*
+- user/text *POST*
   - Creates the user’s text
   - Requires "content" in body
-- user/text/**content** *PUT*
+   ```json
+   {
+       content: "text"
+   }
+   ```
+- user/text *PUT*
   - Updates the user’s text
   - Requires "content" in body
+   ```json
+   {
+       content: "text"
+   }
+   ```
 - text *DELETE*
   - Deletes the user’s text
 
