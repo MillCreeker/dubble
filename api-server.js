@@ -249,7 +249,7 @@ app.delete(uriPrefix + 'user/text', verifyToken, (req, res) => {
 // Listen
 app.listen(
     API_PORT,
-    () => console.log(`API-API is up and running on http://localhost:${API_PORT}`)
+    () => console.log(`REST-API is up and running on http://localhost:${API_PORT}`)
 )
 
 export default app;
