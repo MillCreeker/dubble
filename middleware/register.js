@@ -16,7 +16,7 @@ export async function registerUser(req, res, next) {
             const alreadyExistingUser = users.find((u) => u.username === newUser.username);
 
             if (alreadyExistingUser) {
-                return res.redirect('.register');
+                return res.redirect('./register');
             }
 
             return bcrypt.hash(newUser.password, 10); // encrypt password
@@ -27,5 +27,5 @@ export async function registerUser(req, res, next) {
             next();
         });
     }
-    return res.redirect('.register');
+    return res.redirect('./login');
 }

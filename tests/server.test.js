@@ -55,7 +55,7 @@ describe("POST /register: Register Redirect", () => {
 			password: "TESTING1"
 		})
 			.expect(302)
-			.expect('Location', './')
+			.expect('Location', './login')
 	});
 
 	test("It should redirect after registering already registered user", async () => {
@@ -64,7 +64,7 @@ describe("POST /register: Register Redirect", () => {
 			password: "TESTING1"
 		})
 			.expect(302)
-			.expect('Location', '.register')
+			.expect('Location', './register')
 
 			DBConnection.deleteUserByUsername("TESTING1")
 	});
