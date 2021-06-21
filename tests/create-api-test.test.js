@@ -6,6 +6,14 @@ const uriPrefix = '/api/';
 const username = "test";
 var token = '';
 
+beforeAll(() => {
+    return  DBConnection.deleteUserByUsername(username).then(() => {
+        return DBConnection.addUser({
+            username: username,
+            password: "$2b$10$Th.6jCeDNJaO4aiZCN42G./iMbv7SINHXjqEZu/EeT5iSw91a.8DW"
+        });
+    });
+  });
 
 /**
  * Positive tests
@@ -222,5 +230,7 @@ describe("DELETE text", () => {
         .delete(uriPrefix + "user/text")
         .set("x-access-token", "wrong token");
         expect(response.statusCode).toBe(403);
+
+        DBConnection.deleteUserByUsername(username)
     });
 });

@@ -2,7 +2,15 @@ import request from "supertest";
 import app from "../server.js";
 import { redirectToHomeIfAuth } from "../middleware/session-authorize.js";
 import { DBConnection } from "../util/db-connection.js";
-
+const username = "test";
+beforeAll(() => {
+    return  DBConnection.deleteUserByUsername("TESTING1").then(() => {
+        return DBConnection.addUser({
+            username: username,
+            password: "$2b$10$Th.6jCeDNJaO4aiZCN42G./iMbv7SINHXjqEZu/EeT5iSw91a.8DW"
+        });
+    });;
+    });
 describe("GET /login: Test login route", () => {
 	test("It should get the login screen", (done) => {
 		request(app)
@@ -64,8 +72,6 @@ describe("POST /register: Register Redirect", () => {
 			password: "TESTING1"
 		})
 			.expect(302)
-			.expect('Location', './register')
-
-			DBConnection.deleteUserByUsername("TESTING1")
+			.expect('Location', './register');
 	});
 });

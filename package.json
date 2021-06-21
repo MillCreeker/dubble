@@ -5,6 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
+    "refresh-config": "node ./util/config.js",
     "start": "node .",
     "devStart": "nodemon server.js",
     "create-db": "node ./scripts/create-database.js",

@@ -58,6 +58,11 @@ npm run install
   ```bs
   export NODE_ENV=development
   ```
+
+  After that, refresh the config:
+  ```bs
+  npm run refresh-config
+  ```
 ### 3. Setting up the database
 
 You need a running MySQL installation in the background.<br>
@@ -98,7 +103,10 @@ First, set up the test environment:
   ```bs
   export NODE_ENV=test
   ```
-
+After that, refresh the config:
+  ```bs
+  npm run refresh-config
+  ```
 After setting up the test environment, [set up the database](#3-setting-up-the-database) again if it is your first time in the test environment.
 
 If everything ist set up, run following in terminal/cmd:
@@ -107,7 +115,7 @@ If everything ist set up, run following in terminal/cmd:
 npm run tests
 ```
 
-To revert to the developer environment, run the environment setup commands again and replace **test** with **development**.
+To revert to the developer environment, run the environment setup commands again and replace **test** with **development**. Don't forget to refresh the config.
 
 ### Starting the Tests with node debugger
 
@@ -202,7 +210,3 @@ WebSockets allow interactive communication, work similar to UDP and has the reli
 
 - We have not yet implemented a refresh-token, so JWT's are not very safe.
 For this demo, we have not implemented https, which also lowers the security.
-- We implemented a testing-enviroment and a way to switch between it and the developmental one.
-Unfortunatelly, the [config.js](util/config.js) folder does not refresh its variables from the [.env](config) files automatically but at (seemingly) random and far-spaced intervals.
-Due to this fact, multiple components tried to access the wrong database until it eventually *did* refresh. <br>
-Therefore, we chose not to include it.
