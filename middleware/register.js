@@ -24,7 +24,6 @@ export async function registerUser(req, res, next) {
             newUser.password = hash
             return DBConnection.addUser(newUser); // add user to database
         }).then(function(userId) {
-            req.session.userId = userId; // create session for new user
             next();
         });
     }

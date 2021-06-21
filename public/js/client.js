@@ -59,14 +59,16 @@ if (!window.WebSocket) {
   }
 
   //send the value of the messageBox and then shows it
-  sendBtn.onclick = function () {
-    //login();
-    if (!ws) {
-      showMessage("No WebSocket connection:")
-      return;
+  if(sendBtn){
+    sendBtn.onclick = function () {
+      //login();
+      if (!ws) {
+        showMessage("No WebSocket connection:")
+        return;
+      }
+      ws.send(messageBox.value);
+      showMessage(messageBox.value);
     }
-    ws.send(messageBox.value);
-    showMessage(messageBox.value);
   }
 
   //setup the function

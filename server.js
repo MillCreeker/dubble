@@ -198,7 +198,7 @@ app.get('/register', redirectToHomeIfAuth, async (req, res) => {
  * Redirects to "/register" if register fails.
  */
 app.post('/register', redirectToHomeIfAuth, registerUser, async (req, res) => {
-  return res.redirect('./')
+  return res.redirect('./login')
 });
 
 /**
