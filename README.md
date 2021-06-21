@@ -41,7 +41,7 @@ Sharing text across devices via a WebSocket or API. The text is only available i
 ### Needed dependencies
 
 * [Nodejs](https://nodejs.org/en/)
-* a [MySQL-Database](https://www.mysql.com/) instance (check [configuration](#2-setting-up-the-database))
+* a [MySQL-Database](https://www.mysql.com/) instance (check [configuration](#3-setting-up-the-database))
 
 ### 1. Installing Node dependencies
 
@@ -50,8 +50,16 @@ Run in terminal/cmd:
 ```bs
 npm run install
 ```
-
-### 2. Setting up the database
+### 2. Setting up development evironment
+* Windows Powershell: 
+  ```bs
+  $env:NODE_ENV="development"
+  ```
+* Linux and macOS:
+  ```bs
+  export NODE_ENV=development
+  ```
+### 3. Setting up the database
 
 You need a running MySQL installation in the background.<br>
 Enter your database login-information in the DATABASE parameters inside the [.env](config/.env) file.
@@ -92,7 +100,7 @@ First, set up the test environment:
   export NODE_ENV=test
   ```
 
-After setting up the test environment, [set up the database](#2-setting-up-the-database) again if it is your first time in the test environment.
+After setting up the test environment, [set up the database](#3-setting-up-the-database) again if it is your first time in the test environment.
 
 If everything ist set up, run following in terminal/cmd:
 
@@ -113,7 +121,7 @@ npm run debug
 ### Custom configuration
 
 To create custom configurations, modify the values inside the [.env](config/.env) file.
-Besides the already mentioned [database configurations](#2-setting-up-the-database), you have following options:
+Besides the already mentioned [database configurations](#3-setting-up-the-database), you have following options:
 
 * **WEBSOCKET_SERVER_PORT**: Port that the webserver will run on.
 * **API_PORT**: Port that the api-server will run on.
