@@ -8,11 +8,15 @@
     "start": "node .",
     "devStart": "nodemon server.js",
     "create-db": "node ./scripts/create-database.js",
-    "setup-api": "nodemon ./create-api-server.js",
+    "api": "nodemon ./create-api-server.js",
     "debug": "node --experimental-vm-modules --inspect-brk node_modules/jest/bin/jest.js --runInBand",
     "tests": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "contributors": [
+    {
+      "name": "Tobias Weigl",
+      "email": "tobias.weigl@edu.fh-joanneum.at"
+    },
     {
       "name": "Jan Mühlbacher",
       "email": "jan.muehlbacher@edu.fh-joanneum.at"
@@ -20,10 +24,6 @@
     {
       "name": "Sebastian Toporsch",
       "email": "sebastian.toporsch@edu.fh-joanneum.at"
-    },
-    {
-      "name": "Tobias Weigl",
-      "email": "tobias.weigl@edu.fh-joanneum.at"
     }
   ],
   "keywords": [

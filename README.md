@@ -69,7 +69,7 @@ npm run create-db
 Run the API-Server
 
 ```bs
-npm run setup-api
+npm run api
 ```
 
 ### Starting the Webserver
