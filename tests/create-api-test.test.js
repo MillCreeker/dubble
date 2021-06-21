@@ -1,5 +1,6 @@
-import app from "../create-api-server.js"
+import app from "../api-server.js"
 import request from "supertest";
+import { DBConnection } from "../util/db-connection.js";
 
 const uriPrefix = '/api/';
 var token = '';

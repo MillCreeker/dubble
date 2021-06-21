@@ -8,11 +8,11 @@ export async function verifyToken(req, res, next) {
     let token = req.headers["x-access-token"];
 
     if (typeof token == 'undefined' || token == null) {
-        res.status(400).send({ error: "no access-token provided" });
+        return res.status(400).send({ error: "no access-token provided" });
     } else {
         jwt.verify(token, SECRET, (err, user) => {
             if (err) {
-            res.status(403).send({ error: "unauthorized access denied" });
+                return res.status(403).send({ error: "unauthorized access denied" });
             }
             req.user = user;
             next();

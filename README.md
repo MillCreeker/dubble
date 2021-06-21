@@ -85,7 +85,7 @@ npm run start
 First, set up the test environment:
 * Windows Powershell: 
   ```bs
-  $env:NODE_ENV="test"  
+  $env:NODE_ENV="test"
   ```
 * Linux and macOS:
   ```bs
