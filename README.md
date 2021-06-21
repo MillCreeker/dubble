@@ -162,14 +162,15 @@ The [db-connection.js](util/db-connection.js) establishes a connection to the da
 
 ### WebSocket
 
-WebSocket allow interactive Kommunikation and works similar to UDP and has the reliability of TCP (it keeps the TCP connection alive after connection). The WebSocket is used to send data to the user and display the data. JWT's are used to verify  the "x-access-token" needed for the REST API. In diesem Projekt ist [npm library ws](https://www.npmjs.com/package/ws) verwendet worden.
+WebSockets allow interactive communication, work similar to UDP and has the reliability of TCP (it keeps the TCP connection alive after connection). The WebSocket is used to send data to the user and display the data. The WebSocket sends a request to the API, to get it's data. To authenticate, it sets the JWT stored in the session as a request header. In this project, we used the [ws](https://www.npmjs.com/package/ws) package for WebSockets.
 
 ### Jest
 
-[Jest](https://jestjs.io/) ist a Testing Framework that is very simple to use and in this project it is used in conjunction with Node. Jest is used for testing the REST API and the Server. It is used to confirm that the redirects work and that e.g login and registering works.
+[Jest](https://jestjs.io/) is a testing framework that is very simple to use and in this project it is used in conjunction with Node. Jest is used for testing the REST API and the Server. It is used to confirm that the redirects work and that e.g login and registering works.
 
 ## Known issues
 
 We have not yet implemented a refresh-token, so JWT's are not very safe.
+For this demo, we have not implemented https, which also lowers the security.
 
 ## Useful links
