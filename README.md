@@ -140,10 +140,12 @@ This means that users can only ever edit/view their own settings and texts.
   - Permanently deletes a user from the database
 - text *GET*
   - Returns the user’s text
-- text/**content** *POST*
+- user/text/**content** *POST*
   - Creates the user’s text
-- text/**content** *PUT*
+  - Requires "content" in body
+- user/text/**content** *PUT*
   - Updates the user’s text
+  - Requires "content" in body
 - text *DELETE*
   - Deletes the user’s text
 
@@ -151,12 +153,6 @@ A typical API-URI might look something like this:
 
 ```
 http://localhost:8082/api/user
-```
-
-or
-
-```
-http://localhost:8082/api/text/my new text.
 ```
 
 ### Database

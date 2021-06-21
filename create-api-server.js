@@ -127,14 +127,14 @@ app.delete(uriPrefix + 'user', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/text"
+ * Route: "api/user/text"
  * Method: GET
  * Returned parameter: "textItem"
  * 
  * Description:
  * Returnes the user's text.
  */
-app.get(uriPrefix + 'text', verifyToken, (req, res) => {
+app.get(uriPrefix + 'user/text', verifyToken, (req, res) => {
     try {
         const userId = req.user.id;
 
@@ -155,18 +155,19 @@ app.get(uriPrefix + 'text', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/text/:content"
+ * Route: "api/user/text"
  * Method: POST
+ * Needed parameter: "content"
  * Returned parameter: "id"
  * 
  * Description:
  * Adds a text from the user.
  */
-app.post(uriPrefix + 'text/:content', verifyToken, (req, res) => {
+app.post(uriPrefix + 'user/text', verifyToken, (req, res) => {
     try {
 
         const userId = req.user.id;
-        const content = req.params.content;
+        const content = req.body.content;
 
         if (typeof content == 'undefined' || content == null || content == '') {
             return res.status(400).send({ error: "not all parameters specified" });
@@ -190,17 +191,18 @@ app.post(uriPrefix + 'text/:content', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/text:content"
+ * Route: "api/user/text"
  * Method: PUT
+ * Needed parameter: "content"
  * Returned parameters: "message"
  * 
  * Description:
  * Changes the user's text.
  */
-app.put(uriPrefix + 'text/:content', verifyToken, (req, res) => {
+app.put(uriPrefix + 'user/text', verifyToken, (req, res) => {
     try {
         const userId = req.user.id;
-        const content = req.params.content;
+        const content = req.body.content;
 
         DBConnection.changeTextItem({
             text: content,
@@ -220,14 +222,14 @@ app.put(uriPrefix + 'text/:content', verifyToken, (req, res) => {
 /**
  * API endpoint.
  * 
- * Route: "/api/text"
+ * Route: "api/user/text"
  * Method: DELETE
  * Returned parameters: "message"
  * 
  * Description:
  * Deletes the user's text.
  */
-app.delete(uriPrefix + 'text', verifyToken, (req, res) => {
+app.delete(uriPrefix + 'user/text', verifyToken, (req, res) => {
     try {
         const userId = req.user.id;
 
