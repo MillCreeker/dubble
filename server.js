@@ -8,13 +8,14 @@
 import express from 'express';
 import { WEBSOCKET_SERVER_PORT, SECRET, DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USER, SESSION_LIFETIME, SESSION_NAME } from './util/config.js';
 import { checkCredentials } from './middleware/authenticate.js';
-import { verifyToken } from './middleware/jwt-authorize.js';
 import { registerUser } from './middleware/register.js';
 import store from 'express-mysql-session';
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
 import ws from 'ws';
 import { sessionAuth, redirectToHomeIfAuth } from './middleware/session-authorize.js';
+import expressWs from 'express-ws';
+import request from 'request';
 
 const MySQLStore = store(session);
 const app = express();
@@ -42,8 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', express.static('public'))
 
 
-
-app.use(session({
+const sessionParser = session({
   name: SESSION_NAME,
   secret: SECRET,
   resave: false,
@@ -54,15 +54,33 @@ app.use(session({
     sameSite: true,
     secure: false,
   }
-}));
+});
 
-const wss = new ws.Server({ server });
-wss.on('message', function incoming(data) {
-  wss.clients.forEach(function each(client) {
-    if (client != ws && client.readyState == WebSocket.OPEN) {
-      client.send(data);
-    }
-  })
+expressWs(app);
+app.use(sessionParser);
+
+//make a WebSocket Server for WebSocket messages
+const wss = new ws.Server({ server })
+wss.on('connection', (ws, req) => {
+  ws.on('message', function incoming(data) {
+    sessionParser(req, {}, function () {
+      var options = {
+        url: 'http://localhost:8082/api/user/text',
+        headers: {
+          'x-access-token': req.session.token
+        },
+        body:  JSON.stringify({content: data})
+      };
+      request.post(options, function (error, response, body) {
+        if(error){
+          ws.send("An error occured")
+        }
+        console.log(body);
+      })
+    });
+    //data that was sent on message is sent to the user
+    ws.send(data)
+  });
 })
 
 // setup view engine as "pug"
@@ -113,7 +131,6 @@ app.get('/login', redirectToHomeIfAuth, async (req, res) => {
  * Redirects to "/login" if login fails.
  */
 app.post('/login', redirectToHomeIfAuth, async (req, res) => {
-
   if (req.body.username && req.body.password) {
     const user = await checkCredentials(req.body);
     if (user) {
@@ -180,4 +197,5 @@ app.post('/logout', async (req, res) => {
   });
 });
 
+//export app to be used in other files
 export default app

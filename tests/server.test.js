@@ -1,8 +1,6 @@
 import request from "supertest";
 import app from "../server.js";
-import { jest } from "@jest/globals"
 import { redirectToHomeIfAuth } from "../middleware/session-authorize.js";
-import { registerUser } from "../middleware/register.js";
 import { DBConnection } from "../util/db-connection.js";
 
 describe("GET /login: Test login route", () => {
@@ -20,7 +18,7 @@ describe("GET /login: Test login route", () => {
 describe("POST /login: Test user login", () => {
 	test("It should not login if user data is invalid", async () => {
 		await request(app)
-			.post("/login", redirectToHomeIfAuth).send({
+			.post("/login").send({
 				username: "xxx",
 				password: "xxx"
 			})
@@ -29,7 +27,7 @@ describe("POST /login: Test user login", () => {
 	});
 
 	test("It should login if user data is valid", async () => {
-		await request(app).post("/login", redirectToHomeIfAuth).type('form').send({
+		await request(app).post("/login").type('form').send({
 			username: "test",
 			password: "test"
 		})
@@ -41,7 +39,7 @@ describe("POST /login: Test user login", () => {
 describe("GET /register: Test register route", () => {
 	test("It should get the register screen", (done) => {
 		request(app)
-			.get("/register", redirectToHomeIfAuth)
+			.get("/register")
 			.then((response) => {
 				expect(response.statusCode).toBe(200);
 				done();
@@ -52,7 +50,7 @@ describe("GET /register: Test register route", () => {
 
 describe("POST /register: Register Redirect", () => {
 	test("It should redirect after registering", async () => {
-		await request(app).post("/register", redirectToHomeIfAuth, registerUser).type('form').send({
+		await request(app).post("/register").type('form').send({
 			username: "TESTING1",
 			password: "TESTING1"
 		})
@@ -61,7 +59,7 @@ describe("POST /register: Register Redirect", () => {
 	});
 
 	test("It should redirect after registering already registered user", async () => {
-		await request(app).post("/register", redirectToHomeIfAuth, registerUser).type('form').send({
+		await request(app).post("/register").type('form').send({
 			username: "TESTING1",
 			password: "TESTING1"
 		})
