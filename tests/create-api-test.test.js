@@ -45,13 +45,6 @@ describe("GET /api/user: Testing to get User Data", () => {
         })
             .expect(400)
     });
-
-    test("It should output success if id is valid", async () => {
-        await request(app).get(uriPrefix + "user", verifyToken).send({
-            id: 1,
-        })
-        //.expect(200)
-    });
 });
 
 describe("DELETE /api/user: Testing to delete user data", () => {
@@ -69,13 +62,6 @@ describe("GET /api/text: Reject invalid userId when getting text", () => {
             userId: "999",
         })
             .expect(400)
-    });
-
-    test("It should output success if trying get a text of valid userId", async () => {
-        await request(app).get(uriPrefix + "text", verifyToken).send({
-            userId: "1",
-        })
-        //.expect(200)
     });
 });
 

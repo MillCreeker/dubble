@@ -1,0 +1,17 @@
+#message{
+  height:200px; 
+  overflow: hidden"
+}
+
+
+#messageBox{
+  display: block; 
+  width:100%; 
+  margin-bottom: 10px; 
+  padding:10px;
+}
+
+#send{
+  width: 30%; 
+  height: 50px;
+}

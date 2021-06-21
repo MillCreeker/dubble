@@ -1,4 +1,5 @@
 import express, { response, text } from 'express';
+import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { API_PORT, SECRET } from './util/config.js';
 import { checkCredentials } from './middleware/authenticate.js';
@@ -15,6 +16,15 @@ app.use(function (req, res, next) {
     );
     next();
 });
+
+//setting the cors options to allow all sources
+var corsOptions = {
+    origin: true,
+    optionsSuccessStatus: 200,
+    credentials:true
+}
+//added cors library to allow cross domain interactions
+app.use(cors(corsOptions))
 
 const uriPrefix = '/api/';
 

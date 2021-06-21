@@ -66,7 +66,8 @@ describe("POST /register: Register Redirect", () => {
 			password: "TESTING1"
 		})
 			.expect(302)
-			.expect('Location', '/register')
-	});
+			.expect('Location', '.register')
 
+			DBConnection.deleteUserByUsername("TESTING1")
+	});
 });

@@ -259,6 +259,33 @@ function deleteUser(id) {
     });
 };
 
+/**
+ * Deletes a user from the database.
+ * @param username username of the user
+ * @returns Promise that resolves to result
+ */
+
+function deleteUserByUsername(username) {
+    return new Promise(function (resolve, reject) {
+        var sqlString = `
+            DELETE FROM users
+            WHERE username=?;
+        `;
+        getConnection().then(function(connection) {
+            connection.query(sqlString, [username], function (err, result, fields) {
+                connection.release();
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result);
+                }
+            });
+        }).catch(function(error) {
+            reject(error);
+        });
+    });
+};
+
 
 /**
  * Gets a TextItem from the database
@@ -418,6 +445,7 @@ const DBConnection = {
     addUser: addUser,
     changeUser: changeUser,
     deleteUser: deleteUser,
+    deleteUserByUsername:deleteUserByUsername,
     getTextItem: getTextItem,
     getTextItems: getTextItems,
     addTextItem: addTextItem,
