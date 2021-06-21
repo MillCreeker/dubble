@@ -62,24 +62,48 @@ app.use(sessionParser);
 //make a WebSocket Server for WebSocket messages
 const wss = new ws.Server({ server })
 wss.on('connection', (ws, req) => {
+  
   ws.on('message', function incoming(data) {
     sessionParser(req, {}, function () {
-      var options = {
+      if(req.session.token){
+     //Options for changing message in the database
+      var postOptions = {
         url: 'http://localhost:8082/api/user/text',
         headers: {
+          'Content-Type': 'application/json',
           'x-access-token': req.session.token
         },
-        body:  JSON.stringify({content: data})
+        body: JSON.stringify({ content: data })
       };
-      request.post(options, function (error, response, body) {
-        if(error){
-          ws.send("An error occured")
+      
+      //Post Request for the Database
+      request.post(postOptions, function (error, response, body) {
+        if (JSON.parse(body).error) {
+
+          //Options for changing message in the database
+          var putOptions = {
+            url: 'http://localhost:8082/api/user/text',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-access-token': req.session.token
+            },
+            body: JSON.stringify({ content: data })
+          };
+          
+          //Put Request for the Database
+          request.put(putOptions, function (error, response, body) {
+            if (JSON.parse(body).error) {
+              ws.send(error)
+            } else{
+              ws.send(data)
+            }
+          });
+        } else{
+          ws.send(data)
         }
-        console.log(body);
-      })
+      });
+    }
     });
-    //data that was sent on message is sent to the user
-    ws.send(data)
   });
 })
 

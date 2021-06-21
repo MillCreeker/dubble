@@ -1,95 +1,223 @@
-import app from "../api-server.js"
+import app from "../create-api-server.js"
 import request from "supertest";
 
 const uriPrefix = '/api/';
+var token = '';
 
-describe("POST /api/login: Testing User login", () => {
-    test("It should output error if user is not valid", async () => {
-        await request(app).post(uriPrefix + "login").send({
+/**
+ * Positive tests
+ */
+
+describe("POST login", () => {
+    test("returns an access token", async () => {
+        const response = await request(app)
+        .post(uriPrefix + "login")
+        .send({
+            username: "test",
+            password: "test"
+        });
+        expect(typeof response.body.accessToken).toBe("string");
+        expect(response.statusCode).toBe(200);
+        token = response.body.accessToken;
+    });
+});
+
+describe("GET user", () => {
+    test("returns the user's information", async () => {
+        const response = await request(app)
+        .get(uriPrefix + "user")
+        .set("x-access-token", token);
+        expect(response.body.user.username).toBe("test");
+        expect(response.statusCode).toBe(200);
+    });
+});
+
+describe("POST text", () => {
+    test("creates the user's text", async () => {
+        const response = await request(app)
+        .post(uriPrefix + "user/text")
+        .set("x-access-token", token)
+        .send({content: "test-text"});
+        expect(typeof response.body.id).toBe("number");
+        expect(response.statusCode).toBe(200);
+    });
+});
+
+describe("GET text", () => {
+    test("returns the user's text", async () => {
+        const response = await request(app)
+        .get(uriPrefix + "user/text")
+        .set("x-access-token", token);
+        expect(response.body.textItem.text).toBe("test-text");
+        expect(response.statusCode).toBe(200);
+    });
+});
+
+describe("PUT text", () => {
+    test("changes the user's text", async () => {
+        const response = await request(app)
+        .put(uriPrefix + "user/text")
+        .set("x-access-token", token)
+        .send({content: "test-text"});
+        expect(response.body.message).toBe("success");
+        expect(response.statusCode).toBe(200);
+    });
+});
+
+describe("DELETE text", () => {
+    test("deletes the user's text", async () => {
+        const response = await request(app)
+        .delete(uriPrefix + "user/text")
+        .set("x-access-token", token);
+        expect(response.body.message).toBe("success");
+        expect(response.statusCode).toBe(200);
+    });
+});
+
+/**
+ * Negative tests
+ */
+
+describe("POST login", () => {
+    test("it should output error if user is not valid", async () => {
+        const response = await request(app)
+        .post(uriPrefix + "login")
+        .send({
             username: "xxx",
             password: "xxx"
-        })
-            .expect(404)
+        });
+        expect(response.statusCode).toBe(404);
     });
+});
 
-    test("It should output error if user has no password", async () => {
-        await request(app).post(uriPrefix + "login").send({
-            username: "test",
+describe("POST login", () => {
+    test("it should output error if user has no password", async () => {
+        const response = await request(app)
+        .post(uriPrefix + "login")
+        .send({
+            username: "xxx",
             password: ""
-        })
-            .expect(404)
+        });
+        expect(response.statusCode).toBe(404);
     });
+});
 
-    test("It should output error if user has no username", async () => {
-        await request(app).post(uriPrefix + "login").send({
+describe("POST login", () => {
+    test("it should output error if user has no password", async () => {
+        const response = await request(app)
+        .post(uriPrefix + "login")
+        .send({
             username: "",
-            password: "test"
-        })
-            .expect(404)
-    });
-
-    test("It should output success if user is valid", async () => {
-        await request(app).post(uriPrefix + "login").send({
-            username: "test",
-            password: "test"
-        })
-            .expect(200)
+            password: "xxx"
+        });
+        expect(response.statusCode).toBe(404);
     });
 });
 
-describe("GET /api/user: Testing to get User Data", () => {
-    test("It should output error if id is invalid", async () => {
-        await request(app).get(uriPrefix + "user").send({
-            id: "999",
-        })
-            .expect(400)
+// no access-token
+
+describe("GET user", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .get(uriPrefix + "user");
+        expect(response.statusCode).toBe(400);
     });
 });
 
-describe("DELETE /api/user: Testing to delete user data", () => {
-    test("It should output error if trying to delete user with invalid id", async () => {
-        await request(app).get(uriPrefix + "user").send({
-            id: "999",
-        })
-            .expect(400)
+describe("DELETE user", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .delete(uriPrefix + "user");
+        expect(response.statusCode).toBe(400);
     });
 });
 
-describe("GET /api/text: Reject invalid userId when getting text", () => {
-    test("It should output error if trying get a text of invalid userId", async () => {
-        await request(app).get(uriPrefix + "text").send({
-            userId: "999",
-        })
-            //.expect(400)
+describe("POST text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .post(uriPrefix + "user/text");
+        expect(response.statusCode).toBe(400);
     });
 });
 
-describe("POST /api/text/:content/ Testing to send user text", () => {
-    test("It should output error if trying get a text of invalid userId", async () => {
-        await request(app).post(uriPrefix + "text/:content").send({
-            userId: "999",
-            content: "test"
-        })
-            //.expect(400)
+describe("GET text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .get(uriPrefix + "user/text");
+        expect(response.statusCode).toBe(400);
     });
 });
 
-describe("PUT /api/text/:content/ Accept valid userId when getting text", () => {
-    test("It should output error if trying get a text of invalid userId", async () => {
-        await request(app).post(uriPrefix + "text/:content").send({
-            userId: "999",
-            content: "test"
-        })
-            //.expect(400)
+describe("PUT text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .put(uriPrefix + "user/text")
+        .send({content: "test-text"});
+        expect(response.statusCode).toBe(400);
     });
 });
 
-describe("DELETE /api/text/:content Accept valid userId when getting text", () => {
-    test("It should output error if trying get a text of invalid userId", async () => {
-        await request(app).post(uriPrefix + "text/:content").send({
-            userId: "999",
-            content: "test"
-        })
-            //.expect(400)
+describe("DELETE text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .delete(uriPrefix + "user/text");
+        expect(response.statusCode).toBe(400);
+    });
+});
+
+// wrong access-token
+
+describe("GET user", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .get(uriPrefix + "user")
+        .set("x-access-token", "wrong token");
+        expect(response.statusCode).toBe(403);
+    });
+});
+
+describe("DELETE user", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .delete(uriPrefix + "user")
+        .set("x-access-token", "wrong token");
+        expect(response.statusCode).toBe(403);
+    });
+});
+
+describe("POST text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .post(uriPrefix + "user/text")
+        .set("x-access-token", "wrong token");
+        expect(response.statusCode).toBe(403);
+    });
+});
+
+describe("GET text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .get(uriPrefix + "user/text")
+        .set("x-access-token", "wrong token");
+        expect(response.statusCode).toBe(403);
+    });
+});
+
+describe("PUT text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .put(uriPrefix + "user/text")
+        .set("x-access-token", "wrong token")
+        .send({content: "test-text"});
+        expect(response.statusCode).toBe(403);
+    });
+});
+
+describe("DELETE text", () => {
+    test("it should output error if the access-token is not supplied", async () => {
+        const response = await request(app)
+        .delete(uriPrefix + "user/text")
+        .set("x-access-token", "wrong token");
+        expect(response.statusCode).toBe(403);
     });
 });
