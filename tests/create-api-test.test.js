@@ -1,4 +1,4 @@
-import app from "../create-api-server.js"
+import app from "../api-server.js"
 import request from "supertest";
 
 const uriPrefix = '/api/';
