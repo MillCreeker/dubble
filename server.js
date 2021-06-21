@@ -6,7 +6,7 @@
 'use strict';
 
 import express from 'express';
-import { WEBSOCKET_SERVER_PORT, SECRET, DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USER, SESSION_LIFETIME, SESSION_NAME } from './util/config.js';
+import { WEBSOCKET_SERVER_PORT, SECRET, DATABASE_HOST, DATABASE_PASSWORD, DATABASE_USER, SESSION_LIFETIME, SESSION_NAME, DATABASE_NAME } from './util/config.js';
 import { checkCredentials } from './middleware/authenticate.js';
 import { registerUser } from './middleware/register.js';
 import store from 'express-mysql-session';
@@ -30,7 +30,7 @@ const conOptions = {
   host: DATABASE_HOST,
   user: DATABASE_USER,
   password: DATABASE_PASSWORD,
-  database: 'dubble',
+  database: DATABASE_NAME,
   multipleStatements: true
 }
 

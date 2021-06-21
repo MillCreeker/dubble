@@ -2,9 +2,7 @@
  * Module for initially creating the dubble database with the needed tables and relations.
  */
 import mysql from 'mysql';
-import { DATABASE_HOST } from '../util/config.js';
-import { DATABASE_USER } from '../util/config.js';
-import { DATABASE_PASSWORD } from '../util/config.js';
+import { DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD } from '../util/config.js';
 
 /** 
  * Creates a connection to the database.
@@ -28,7 +26,7 @@ con.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
   // create dubble database
-  var query = con.query("CREATE DATABASE IF NOT EXISTS dubble;", function (err, result) {
+  var query = con.query(`CREATE DATABASE IF NOT EXISTS ${DATABASE_NAME};`, function (err, result) {
     if (err) throw err;
     console.log("Database created");
     con.destroy();
@@ -64,7 +62,7 @@ function createTables() {
     host: DATABASE_HOST,
     user: DATABASE_USER,
     password: DATABASE_PASSWORD,
-    database: 'dubble',
+    database: DATABASE_NAME,
     multipleStatements: true
   });
 

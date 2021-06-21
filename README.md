@@ -82,11 +82,25 @@ npm run start
 
 ### Starting the Tests
 
-Run in terminal/cmd:
+First, set up the test environment:
+* Windows Powershell: 
+  ```bs
+  $env:NODE_ENV="test"  
+  ```
+* Linux and macOS:
+  ```bs
+  export NODE_ENV=test
+  ```
+
+After setting up the test environment, [set up the database](#2-setting-up-the-database) again if it is your first time in the test environment.
+
+If everything ist set up, run following in terminal/cmd:
 
 ```bs
 npm run tests
 ```
+
+To revert to the developer environment, run the environment setup commands again and replace **test** with **development**
 
 ### Starting the Tests with node debugger
 

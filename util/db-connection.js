@@ -1,8 +1,6 @@
 import mysql from 'mysql';
 
-import { DATABASE_HOST } from './config.js';
-import { DATABASE_USER } from './config.js';
-import { DATABASE_PASSWORD } from './config.js';
+import { DATABASE_HOST,DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD } from './config.js';
 import { User } from '../models/User.js';
 import { UserWithPassword } from '../models/UserWithPassword.js';
 import { TextItem } from '../models/TextItem.js';
@@ -11,7 +9,7 @@ const connectionPool = mysql.createPool({
     host: DATABASE_HOST,
     user: DATABASE_USER,
     password: DATABASE_PASSWORD,
-    database: 'dubble',
+    database: DATABASE_NAME,
     multipleStatements: true
 });
 
