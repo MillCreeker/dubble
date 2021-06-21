@@ -14,7 +14,6 @@ import session from 'express-session';
 import jwt from 'jsonwebtoken';
 import ws from 'ws';
 import { sessionAuth, redirectToHomeIfAuth } from './middleware/session-authorize.js';
-import expressWs from 'express-ws';
 import request from 'request';
 
 const MySQLStore = store(session);
@@ -55,54 +54,75 @@ const sessionParser = session({
     secure: false,
   }
 });
-
-expressWs(app);
 app.use(sessionParser);
+
 
 //make a WebSocket Server for WebSocket messages
 const wss = new ws.Server({ server })
 wss.on('connection', (ws, req) => {
-  
+
   ws.on('message', function incoming(data) {
     sessionParser(req, {}, function () {
-      if(req.session.token){
-     //Options for changing message in the database
-      var postOptions = {
-        url: 'http://localhost:8082/api/user/text',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': req.session.token
-        },
-        body: JSON.stringify({ content: data })
-      };
-      
-      //Post Request for the Database
-      request.post(postOptions, function (error, response, body) {
-        if (JSON.parse(body).error) {
+      ws.userId = req.session.userId;
+      if (req.session.token) {
+        //Options for changing message in the database
+        var postOptions = {
+          url: 'http://localhost:8082/api/user/text',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': req.session.token
+          },
+          body: JSON.stringify({ content: data })
+        };
 
-          //Options for changing message in the database
-          var putOptions = {
-            url: 'http://localhost:8082/api/user/text',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-access-token': req.session.token
-            },
-            body: JSON.stringify({ content: data })
-          };
-          
-          //Put Request for the Database
-          request.put(putOptions, function (error, response, body) {
-            if (JSON.parse(body).error) {
-              ws.send(error)
-            } else{
-              ws.send(data)
-            }
-          });
-        } else{
-          ws.send(data)
-        }
-      });
-    }
+        //Post Request for the Database
+        request.post(postOptions, function (error, res, body) {
+          if (res.status != 200) {
+
+            //Options for changing message in the database
+            var putOptions = {
+              url: 'http://localhost:8082/api/user/text',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': req.session.token
+              },
+              body: JSON.stringify({ content: data })
+            };
+
+            //Put Request for the Database
+            request.put(putOptions, function (error, response, body) {
+              if (JSON.parse(body).error) {
+                wss.clients.forEach(function each(client) {
+                  if (client !== ws && client.readyState === ws.OPEN) {
+                    //send to users with same client and session id
+                    if (client.userId == req.session.userId) {
+                      client.send(data)
+                    }
+                  }
+                })
+              } else {
+                wss.clients.forEach(function each(client) {
+                  if (client !== ws && client.readyState === ws.OPEN) {
+                    //send to users with same client and session id
+                    if (client.userId == req.session.userId) {
+                      client.send(data)
+                    }
+                  }
+                })
+              }
+            });
+          } else {
+            wss.clients.forEach(function each(client) {
+              if (client !== ws && client.readyState === ws.OPEN) {
+                //send to users with same client and session id
+                if (client.userId == req.session.userId) {
+                  client.send(data)
+                }
+              }
+            })
+          }
+        });
+      }
     });
   });
 })
